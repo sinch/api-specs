@@ -1,0 +1,1824 @@
+{
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "swagger": "2.0",
+  "info": {
+    "title": "Conversation API",
+    "version": "8496a943"
+  },
+  "paths": {
+    "/v1alpha/{app.name=namespaces/*/apps/*}": {
+      "patch": {
+        "tags": [
+          "AppService"
+        ],
+        "summary": "Update an app.",
+        "operationId": "UpdateApp",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "namespaces/*/conversationapps/*",
+            "name": "app.name",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1alpha1UpdateAppRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/typeConversationApp"
+            }
+          }
+        }
+      }
+    },
+    "/v1alpha/{app}": {
+      "get": {
+        "tags": [
+          "AppService"
+        ],
+        "summary": "Gets an app",
+        "operationId": "GetApp",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "Required. The app resource name.\nnamespaces/*/apps/*",
+            "name": "app",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/typeConversationApp"
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "AppService"
+        ],
+        "summary": "Delete an app.",
+        "operationId": "DeleteApp",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "app",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {}
+          }
+        }
+      }
+    },
+    "/v1alpha/{app}/conversations": {
+      "get": {
+        "description": "This operation lists all conversations that are associated with the referenced app",
+        "tags": [
+          "ConversationService"
+        ],
+        "summary": "List conversations",
+        "operationId": "ListConversations",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "Optional. The resource name of the app involved in the conversations.\nAt least one of app and contact needs to be present.\nnamespaces/*/apps/*",
+            "name": "app",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "Optional. The resource name of the contact involved in the conversations.\nAt least one of app and contact needs to be present.\nnamespaces/*/contacts/*.",
+            "name": "contact",
+            "in": "query"
+          },
+          {
+            "type": "boolean",
+            "format": "boolean",
+            "description": "Required. True if only active conversations should be listed.",
+            "name": "only_active",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "format": "int32",
+            "name": "page_size",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "name": "page_token",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "name": "order_by",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1alpha1ListConversationsResponse"
+            }
+          },
+          "401": {
+            "description": "Returned when the request is Unauthorized.",
+            "schema": {}
+          },
+          "403": {
+            "description": "Returned when the request is Forbidden.",
+            "schema": {}
+          },
+          "404": {
+            "description": "Returned when the given App does not exist.",
+            "schema": {}
+          },
+          "500": {
+            "description": "Internal error, try again with exponential backoff.",
+            "schema": {}
+          },
+          "503": {
+            "description": "Internal error, try again with exponential backoff.",
+            "schema": {}
+          }
+        }
+      }
+    },
+    "/v1alpha/{app}/events": {
+      "post": {
+        "description": "Sends an event to the referenced contact from the referenced app.\nNote that this operation enqueues the event in a queues so a successful\nresponse only indicates that the event has been queued.",
+        "tags": [
+          "EventService"
+        ],
+        "summary": "Send an event",
+        "operationId": "SendEvent",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "Required. The sending app's resource name.\nnamespaces/*/apps/*",
+            "name": "app",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1alpha1SendEventRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1alpha1SendEventResponse"
+            }
+          },
+          "400": {
+            "description": "Returned when the given message is malformed.",
+            "schema": {}
+          },
+          "401": {
+            "description": "Returned when the request is Unauthorized.",
+            "schema": {}
+          },
+          "403": {
+            "description": "Returned when the request is Forbidden.",
+            "schema": {}
+          },
+          "404": {
+            "description": "Returned when the given app does not exist.",
+            "schema": {}
+          },
+          "500": {
+            "description": "Internal error, try again with exponential backoff.",
+            "schema": {}
+          },
+          "503": {
+            "description": "Internal error, try again with exponential backoff.",
+            "schema": {}
+          }
+        }
+      }
+    },
+    "/v1alpha/{app}/messages": {
+      "post": {
+        "description": "Sends an message to the referenced contact from the referenced app.\nNote that this operation enqueues the message in a queues so a successful\nresponse only indicates that the message has been queued.",
+        "tags": [
+          "MessageService"
+        ],
+        "summary": "Send a message",
+        "operationId": "SendMessage",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "Required. The sending app's resource name.\nnamespaces/*/apps/*",
+            "name": "app",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1alpha1SendMessageRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1alpha1SendMessageResponse"
+            }
+          },
+          "400": {
+            "description": "Returned when the given message is malformed.",
+            "schema": {}
+          },
+          "401": {
+            "description": "Returned when the request is Unauthorized.",
+            "schema": {}
+          },
+          "403": {
+            "description": "Returned when the request is Forbidden.",
+            "schema": {}
+          },
+          "404": {
+            "description": "Returned when the given app does not exist.",
+            "schema": {}
+          },
+          "500": {
+            "description": "Internal error, try again with exponential backoff.",
+            "schema": {}
+          },
+          "503": {
+            "description": "Internal error, try again with exponential backoff.",
+            "schema": {}
+          }
+        }
+      }
+    },
+    "/v1alpha/{app}:transcode": {
+      "post": {
+        "description": "Transcodes the message from the Conversation API format to the\nchannel-specific formats for the requested channels. No message\nis sent to the contact.",
+        "tags": [
+          "TranscodingService"
+        ],
+        "summary": "Transcode a message",
+        "operationId": "TranscodeMessage",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "Required. The resource name of the app.\nnamespaces/*/apps/*",
+            "name": "app",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1alpha1TranscodeMessageRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1alpha1TranscodeMessageResponse"
+            }
+          },
+          "400": {
+            "description": "Returned when the given message is malformed.",
+            "schema": {}
+          },
+          "401": {
+            "description": "Returned when the request is Unauthorized.",
+            "schema": {}
+          },
+          "403": {
+            "description": "Returned when the request is Forbidden.",
+            "schema": {}
+          },
+          "404": {
+            "description": "Returned when the given app does not exist.",
+            "schema": {}
+          },
+          "500": {
+            "description": "Internal error, try again with exponential backoff.",
+            "schema": {}
+          },
+          "503": {
+            "description": "Internal error, try again with exponential backoff.",
+            "schema": {}
+          }
+        }
+      }
+    },
+    "/v1alpha/{contact.name=namespaces/*/contacts/*}": {
+      "patch": {
+        "tags": [
+          "ContactService"
+        ],
+        "summary": "Update a Contact",
+        "operationId": "UpdateContact",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "The contact resouce name.\nnamespaces/*/contacts/*",
+            "name": "contact.name",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1alpha1UpdateContactRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/conversationapitypeContact"
+            }
+          },
+          "400": {
+            "description": "Returned when the given contact is malformed.",
+            "schema": {}
+          },
+          "401": {
+            "description": "Returned when the request is Unauthorized.",
+            "schema": {}
+          },
+          "403": {
+            "description": "Returned when the request is Forbidden.",
+            "schema": {}
+          },
+          "404": {
+            "description": "Returned when the given contact does not exist.",
+            "schema": {}
+          },
+          "500": {
+            "description": "Internal error, try again with exponential backoff.",
+            "schema": {}
+          },
+          "503": {
+            "description": "Internal error, try again with exponential backoff.",
+            "schema": {}
+          }
+        }
+      }
+    },
+    "/v1alpha/{contact}": {
+      "get": {
+        "tags": [
+          "ContactService"
+        ],
+        "summary": "Get a Contact.",
+        "operationId": "GetContact",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "Required. The Contact resource name to fetch.\nnamespaces/*/contacts/*",
+            "name": "contact",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/conversationapitypeContact"
+            }
+          },
+          "401": {
+            "description": "Returned when the request is Unauthorized.",
+            "schema": {}
+          },
+          "403": {
+            "description": "Returned when the request is Forbidden.",
+            "schema": {}
+          },
+          "404": {
+            "description": "Returned when the given Contact does not exist.",
+            "schema": {}
+          },
+          "500": {
+            "description": "Internal error, try again with exponential backoff.",
+            "schema": {}
+          },
+          "503": {
+            "description": "Internal error, try again with exponential backoff.",
+            "schema": {}
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "ContactService"
+        ],
+        "summary": "Delete a Contact",
+        "operationId": "DeleteContact",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "Required. The Contact resource name to delete.\nnamespaces/*/contacts/*",
+            "name": "contact",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {}
+          },
+          "401": {
+            "description": "Returned when the request is Unauthorized.",
+            "schema": {}
+          },
+          "403": {
+            "description": "Returned when the request is Forbidden.",
+            "schema": {}
+          },
+          "404": {
+            "description": "Returned when the given Contact does not exist.",
+            "schema": {}
+          },
+          "500": {
+            "description": "Internal error, try again with exponential backoff.",
+            "schema": {}
+          },
+          "503": {
+            "description": "Internal error, try again with exponential backoff.",
+            "schema": {}
+          }
+        }
+      }
+    },
+    "/v1alpha/{contact}/capability": {
+      "get": {
+        "description": "This operation performs a capability check on all the channels\nassociated with the referenced contact. The response will indicate\non which channels the contact can be reached on.",
+        "tags": [
+          "CapabilityService"
+        ],
+        "summary": "Check contact capabilities",
+        "operationId": "GetCapability",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "Required. The Contact resource name.\nnamespaces/*/contacts/*",
+            "name": "contact",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "Required. The app resource name.\nnamespaces/*/apps/*.",
+            "name": "app",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1alpha1Capability"
+            }
+          },
+          "401": {
+            "description": "Returned when the request is Unauthorized.",
+            "schema": {}
+          },
+          "403": {
+            "description": "Returned when the request is Forbidden.",
+            "schema": {}
+          },
+          "404": {
+            "description": "Returned when the given Contact does not exist.",
+            "schema": {}
+          },
+          "500": {
+            "description": "Internal error, try again with exponential backoff.",
+            "schema": {}
+          },
+          "503": {
+            "description": "Internal error, try again with exponential backoff.",
+            "schema": {}
+          }
+        }
+      }
+    },
+    "/v1alpha/{contact}/conversations": {
+      "get": {
+        "description": "This operation lists all conversations that are associated with the referenced app",
+        "tags": [
+          "ConversationService"
+        ],
+        "summary": "List conversations",
+        "operationId": "ListConversations2",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "Optional. The resource name of the contact involved in the conversations.\nAt least one of app and contact needs to be present.\nnamespaces/*/contacts/*",
+            "name": "contact",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "Optional. The resource name of the app involved in the conversations.\nAt least one of app and contact needs to be present.\nnamespaces/*/apps/*.",
+            "name": "app",
+            "in": "query"
+          },
+          {
+            "type": "boolean",
+            "format": "boolean",
+            "description": "Required. True if only active conversations should be listed.",
+            "name": "only_active",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "format": "int32",
+            "name": "page_size",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "name": "page_token",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "name": "order_by",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1alpha1ListConversationsResponse"
+            }
+          },
+          "401": {
+            "description": "Returned when the request is Unauthorized.",
+            "schema": {}
+          },
+          "403": {
+            "description": "Returned when the request is Forbidden.",
+            "schema": {}
+          },
+          "404": {
+            "description": "Returned when the given App does not exist.",
+            "schema": {}
+          },
+          "500": {
+            "description": "Internal error, try again with exponential backoff.",
+            "schema": {}
+          },
+          "503": {
+            "description": "Internal error, try again with exponential backoff.",
+            "schema": {}
+          }
+        }
+      }
+    },
+    "/v1alpha/{conversation.name=namespaces/*/apps/*/conversations/*}": {
+      "patch": {
+        "description": "This operation updates a conversation which can, for instance, be used to\nupdate the metadata associated with a conversation.",
+        "tags": [
+          "ConversationService"
+        ],
+        "summary": "Update a conversation",
+        "operationId": "UpdateConversation",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "Conversation resource name\nnamespaces/*/apps/*/conversations/*",
+            "name": "conversation.name",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1alpha1UpdateConversationRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/typeConversation"
+            }
+          },
+          "400": {
+            "description": "Returned when the given Conversation is malformed.",
+            "schema": {}
+          },
+          "401": {
+            "description": "Returned when the request is Unauthorized.",
+            "schema": {}
+          },
+          "403": {
+            "description": "Returned when the request is Forbidden.",
+            "schema": {}
+          },
+          "404": {
+            "description": "Returned when the given Conversation does not exist.",
+            "schema": {}
+          },
+          "500": {
+            "description": "Internal error, try again with exponential backoff.",
+            "schema": {}
+          },
+          "503": {
+            "description": "Internal error, try again with exponential backoff.",
+            "schema": {}
+          }
+        }
+      }
+    },
+    "/v1alpha/{conversation}": {
+      "get": {
+        "description": "Retrieves a conversation by resource name. A conversation has two participating\nentries, an app and a contact.",
+        "tags": [
+          "ConversationService"
+        ],
+        "summary": "Get a conversation",
+        "operationId": "GetConversation",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "Required. The conversation resource name.\nnamespaces/*/apps/*/conversations/*",
+            "name": "conversation",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/typeConversation"
+            }
+          },
+          "401": {
+            "description": "Returned when the request is Unauthorized.",
+            "schema": {}
+          },
+          "403": {
+            "description": "Returned when the request is Forbidden.",
+            "schema": {}
+          },
+          "404": {
+            "description": "Returned when the given Conversation does not exist.",
+            "schema": {}
+          },
+          "500": {
+            "description": "Internal error, try again with exponential backoff.",
+            "schema": {}
+          },
+          "503": {
+            "description": "Internal error, try again with exponential backoff.",
+            "schema": {}
+          }
+        }
+      }
+    },
+    "/v1alpha/{conversation}/messages": {
+      "get": {
+        "description": "This operation lists all messages associated with the referenced conversation",
+        "tags": [
+          "ConversationService"
+        ],
+        "summary": "List messages",
+        "operationId": "ListMessages",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "Required. Resource name of the conversation.\nnamespaces/*/apps/*/conversations/*",
+            "name": "conversation",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "format": "int32",
+            "name": "page_size",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "name": "page_token",
+            "in": "query"
+          },
+          {
+            "enum": [
+              "CONVERSATION_VIEW_UNSPECIFIED",
+              "BASIC",
+              "FULL"
+            ],
+            "type": "string",
+            "default": "CONVERSATION_VIEW_UNSPECIFIED",
+            "name": "view",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "name": "order_by",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1alpha1ListMessagesResponse"
+            }
+          },
+          "401": {
+            "description": "Returned when the request is Unauthorized.",
+            "schema": {}
+          },
+          "403": {
+            "description": "Returned when the request is Forbidden.",
+            "schema": {}
+          },
+          "404": {
+            "description": "Returned when the given Conversation does not exist.",
+            "schema": {}
+          },
+          "500": {
+            "description": "Internal error, try again with exponential backoff.",
+            "schema": {}
+          },
+          "503": {
+            "description": "Internal error, try again with exponential backoff.",
+            "schema": {}
+          }
+        }
+      }
+    },
+    "/v1alpha/{conversation}:stop": {
+      "post": {
+        "description": "This operation stops the referenced conversation, if the conversation is still active.\nA new conversation will be called if a new message is exchanged between the app or contact\nthat was part of the stopped conversation.",
+        "tags": [
+          "ConversationService"
+        ],
+        "summary": "Stop conversation",
+        "operationId": "StopActiveConversation",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "Required. The resource name of the Conversation that should be stopped.\nnamespaces/*/apps/*/conversations/*",
+            "name": "conversation",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1alpha1StopActiveConversationRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {}
+          },
+          "401": {
+            "description": "Returned when the request is Unauthorized.",
+            "schema": {}
+          },
+          "403": {
+            "description": "Returned when the request is Forbidden.",
+            "schema": {}
+          },
+          "404": {
+            "description": "Returned when the given Conversation does not exist.",
+            "schema": {}
+          },
+          "500": {
+            "description": "Internal error, try again with exponential backoff.",
+            "schema": {}
+          },
+          "503": {
+            "description": "Internal error, try again with exponential backoff.",
+            "schema": {}
+          }
+        }
+      }
+    },
+    "/v1alpha/{destination}:merge": {
+      "post": {
+        "description": "The remaining contact will contain all conversations that the removed\ncontact has had. The contact being removed cannot be referenced after\nthis call.",
+        "tags": [
+          "ContactService"
+        ],
+        "summary": "Merge two contacts",
+        "operationId": "MergeContact",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "Required. The Contact resouce name that should be kept.\nnamespaces/*/contacts/*",
+            "name": "destination",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1alpha1MergeContactRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/conversationapitypeContact"
+            }
+          },
+          "401": {
+            "description": "Returned when the request is Unauthorized.",
+            "schema": {}
+          },
+          "403": {
+            "description": "Returned when the request is Forbidden.",
+            "schema": {}
+          },
+          "404": {
+            "description": "Returned when one, or both, of the two given contacts does not exist.",
+            "schema": {}
+          },
+          "500": {
+            "description": "Internal error, try again with exponential backoff.",
+            "schema": {}
+          },
+          "503": {
+            "description": "Internal error, try again with exponential backoff.",
+            "schema": {}
+          }
+        }
+      }
+    },
+    "/v1alpha/{namespace}/apps": {
+      "post": {
+        "tags": [
+          "AppService"
+        ],
+        "summary": "Creates an app.",
+        "operationId": "CreateApp",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "Required. Owning namespace resouce name.\nnamespaces/*",
+            "name": "namespace",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1alpha1CreateAppRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/typeConversationApp"
+            }
+          }
+        }
+      }
+    },
+    "/v1alpha/{namespace}/contacts": {
+      "post": {
+        "tags": [
+          "ContactService"
+        ],
+        "summary": "Create a Contact",
+        "operationId": "CreateContact",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "Required. The namespace resource name of the new contact.\nnamespaces/*",
+            "name": "namespace",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1alpha1CreateContactRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/conversationapitypeContact"
+            }
+          },
+          "400": {
+            "description": "Returned when the given contact is malformed.",
+            "schema": {}
+          },
+          "401": {
+            "description": "Returned when the request is Unauthorized.",
+            "schema": {}
+          },
+          "403": {
+            "description": "Returned when the request is Forbidden.",
+            "schema": {}
+          },
+          "500": {
+            "description": "Internal error, try again with exponential backoff.",
+            "schema": {}
+          },
+          "503": {
+            "description": "Internal error, try again with exponential backoff.",
+            "schema": {}
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "conversationapitypeContact": {
+      "type": "object",
+      "properties": {
+        "channel_identities": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/typeContactChannelIdentity"
+          }
+        },
+        "channel_priority": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/typeConversationChannel"
+          }
+        },
+        "name": {
+          "type": "string",
+          "title": "The contact resouce name.\nnamespaces/*/contacts/*"
+        }
+      }
+    },
+    "conversationapitypeLocation": {
+      "type": "object",
+      "properties": {
+        "label": {
+          "description": "Optional. Label or name for the position.",
+          "type": "string"
+        },
+        "latitude": {
+          "description": "Required. The latitude.",
+          "type": "string"
+        },
+        "longitude": {
+          "description": "Required. The longitude.",
+          "type": "string"
+        }
+      }
+    },
+    "protobufFieldMask": {
+      "description": "paths: \"f.a\"\n    paths: \"f.b.d\"\n\nHere `f` represents a field in some root message, `a` and `b`\nfields in the message found in `f`, and `d` a field found in the\nmessage in `f.b`.\n\nField masks are used to specify a subset of fields that should be\nreturned by a get operation or modified by an update operation.\nField masks also have a custom JSON encoding (see below).\n\n# Field Masks in Projections\n\nWhen used in the context of a projection, a response message or\nsub-message is filtered by the API to only contain those fields as\nspecified in the mask. For example, if the mask in the previous\nexample is applied to a response message as follows:\n\n    f {\n      a : 22\n      b {\n        d : 1\n        x : 2\n      }\n      y : 13\n    }\n    z: 8\n\nThe result will not contain specific values for fields x,y and z\n(their value will be set to the default, and omitted in proto text\noutput):\n\n\n    f {\n      a : 22\n      b {\n        d : 1\n      }\n    }\n\nA repeated field is not allowed except at the last position of a\npaths string.\n\nIf a FieldMask object is not present in a get operation, the\noperation applies to all fields (as if a FieldMask of all fields\nhad been specified).\n\nNote that a field mask does not necessarily apply to the\ntop-level response message. In case of a REST get operation, the\nfield mask applies directly to the response, but in case of a REST\nlist operation, the mask instead applies to each individual message\nin the returned resource list. In case of a REST custom method,\nother definitions may be used. Where the mask applies will be\nclearly documented together with its declaration in the API.  In\nany case, the effect on the returned resource/resources is required\nbehavior for APIs.\n\n# Field Masks in Update Operations\n\nA field mask in update operations specifies which fields of the\ntargeted resource are going to be updated. The API is required\nto only change the values of the fields as specified in the mask\nand leave the others untouched. If a resource is passed in to\ndescribe the updated values, the API ignores the values of all\nfields not covered by the mask.\n\nIf a repeated field is specified for an update operation, the existing\nrepeated values in the target resource will be overwritten by the new values.\nNote that a repeated field is only allowed in the last position of a `paths`\nstring.\n\nIf a sub-message is specified in the last position of the field mask for an\nupdate operation, then the existing sub-message in the target resource is\noverwritten. Given the target message:\n\n    f {\n      b {\n        d : 1\n        x : 2\n      }\n      c : 1\n    }\n\nAnd an update message:\n\n    f {\n      b {\n        d : 10\n      }\n    }\n\nthen if the field mask is:\n\n paths: \"f.b\"\n\nthen the result will be:\n\n    f {\n      b {\n        d : 10\n      }\n      c : 1\n    }\n\nHowever, if the update mask was:\n\n paths: \"f.b.d\"\n\nthen the result would be:\n\n    f {\n      b {\n        d : 10\n        x : 2\n      }\n      c : 1\n    }\n\nIn order to reset a field's value to the default, the field must\nbe in the mask and set to the default value in the provided resource.\nHence, in order to reset all fields of a resource, provide a default\ninstance of the resource and set all fields in the mask, or do\nnot provide a mask as described below.\n\nIf a field mask is not present on update, the operation applies to\nall fields (as if a field mask of all fields has been specified).\nNote that in the presence of schema evolution, this may mean that\nfields the client does not know and has therefore not filled into\nthe request will be reset to their default. If this is unwanted\nbehavior, a specific service may require a client to always specify\na field mask, producing an error if not.\n\nAs with get operations, the location of the resource which\ndescribes the updated values in the request message depends on the\noperation kind. In any case, the effect of the field mask is\nrequired to be honored by the API.\n\n## Considerations for HTTP REST\n\nThe HTTP kind of an update operation which uses a field mask must\nbe set to PATCH instead of PUT in order to satisfy HTTP semantics\n(PUT must only be used for full updates).\n\n# JSON Encoding of Field Masks\n\nIn JSON, a field mask is encoded as a single string where paths are\nseparated by a comma. Fields name in each path are converted\nto/from lower-camel naming conventions.\n\nAs an example, consider the following message declarations:\n\n    message Profile {\n      User user = 1;\n      Photo photo = 2;\n    }\n    message User {\n      string display_name = 1;\n      string address = 2;\n    }\n\nIn proto a field mask for `Profile` may look as such:\n\n    mask {\n      paths: \"user.display_name\"\n      paths: \"photo\"\n    }\n\nIn JSON, the same mask is represented as below:\n\n    {\n      mask: \"user.displayName,photo\"\n    }\n\n# Field Masks and Oneof Fields\n\nField masks treat fields in oneofs just as regular fields. Consider the\nfollowing message:\n\n    message SampleMessage {\n      oneof test_oneof {\n        string name = 4;\n        SubMessage sub_message = 9;\n      }\n    }\n\nThe field mask can be:\n\n    mask {\n      paths: \"name\"\n    }\n\nOr:\n\n    mask {\n      paths: \"sub_message\"\n    }\n\nNote that oneof type names (\"test_oneof\" in this case) cannot be used in\npaths.\n\n## Field Mask Verification\n\nThe implementation of any API method which has a FieldMask type field in the\nrequest should verify the included field paths, and return an\n`INVALID_ARGUMENT` error if any path is duplicated or unmappable.",
+      "type": "object",
+      "title": "`FieldMask` represents a set of symbolic field paths, for example:",
+      "properties": {
+        "paths": {
+          "description": "The set of field mask paths.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "typeAppEvent": {
+      "type": "object",
+      "title": "Message originating from an app",
+      "properties": {
+        "composing_event": {
+          "$ref": "#/definitions/typeComposingEvent"
+        }
+      }
+    },
+    "typeAppMessage": {
+      "type": "object",
+      "title": "Message originating from an app",
+      "properties": {
+        "call_message": {
+          "$ref": "#/definitions/typeCallMessage"
+        },
+        "card_message": {
+          "$ref": "#/definitions/typeCardMessage"
+        },
+        "carousel_message": {
+          "$ref": "#/definitions/typeCarouselMessage"
+        },
+        "choice_message": {
+          "$ref": "#/definitions/typeChoiceMessage"
+        },
+        "explicit_channel_message": {
+          "description": "Optional. Channel specific messages, overriding any transcoding.\nThe key in the map must point to a valid channel as defined by\nthe enum Channel.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "location_message": {
+          "$ref": "#/definitions/typeLocationMessage"
+        },
+        "media_message": {
+          "$ref": "#/definitions/typeMediaMessage"
+        },
+        "template_message": {
+          "$ref": "#/definitions/typeTemplateMessage"
+        },
+        "text_message": {
+          "$ref": "#/definitions/typeTextMessage"
+        }
+      }
+    },
+    "typeCallMessage": {
+      "type": "object",
+      "properties": {
+        "phone_number": {
+          "description": "Required. Phone number in E.164 with leading +.",
+          "type": "string"
+        },
+        "title": {
+          "description": "Required. Title shown close to the phone number.",
+          "type": "string"
+        }
+      }
+    },
+    "typeCallbackType": {
+      "type": "string",
+      "default": "UNSPECIFIED_CALLBACK_TYPE",
+      "enum": [
+        "UNSPECIFIED_CALLBACK_TYPE",
+        "GRPC",
+        "HTTP"
+      ]
+    },
+    "typeCardMessage": {
+      "type": "object",
+      "properties": {
+        "choices": {
+          "description": "Optional.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/typeChoice"
+          }
+        },
+        "description": {
+          "description": "Optional.",
+          "type": "string"
+        },
+        "media_message": {
+          "description": "Optional.",
+          "$ref": "#/definitions/typeMediaMessage"
+        },
+        "title": {
+          "description": "Required.",
+          "type": "string"
+        }
+      }
+    },
+    "typeCarouselMessage": {
+      "type": "object",
+      "properties": {
+        "cards": {
+          "description": "Required. A list of 2..10 cards.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/typeCardMessage"
+          }
+        },
+        "choice": {
+          "description": "Optional. Outer choises on the carousel level.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/typeChoice"
+          }
+        }
+      }
+    },
+    "typeChoice": {
+      "type": "object",
+      "properties": {
+        "call_message": {
+          "$ref": "#/definitions/typeCallMessage"
+        },
+        "location_message": {
+          "$ref": "#/definitions/typeLocationMessage"
+        },
+        "postback_data": {
+          "description": "Optional. This data will be returned in the ChoiceResponseMessage.",
+          "type": "string"
+        },
+        "text_message": {
+          "$ref": "#/definitions/typeTextMessage"
+        },
+        "url_message": {
+          "$ref": "#/definitions/typeUrlMessage"
+        }
+      }
+    },
+    "typeChoiceMessage": {
+      "type": "object",
+      "properties": {
+        "choices": {
+          "description": "Required.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/typeChoice"
+          }
+        },
+        "text_message": {
+          "description": "Required.",
+          "$ref": "#/definitions/typeTextMessage"
+        }
+      }
+    },
+    "typeChoiceResponseMessage": {
+      "type": "object",
+      "properties": {
+        "choice": {
+          "description": "Required. The selected choice.",
+          "$ref": "#/definitions/typeChoice"
+        },
+        "message_id": {
+          "description": "Required. The message id containing the choice.",
+          "type": "string"
+        }
+      }
+    },
+    "typeComposingEvent": {
+      "type": "object"
+    },
+    "typeContactChannelIdentity": {
+      "type": "object",
+      "properties": {
+        "channel": {
+          "description": "Required. The channel.",
+          "$ref": "#/definitions/typeConversationChannel"
+        },
+        "channel_recipient_identity": {
+          "description": "Required. The channel recipient identity.",
+          "type": "string"
+        },
+        "name": {
+          "type": "string",
+          "title": "namespaces/*/contacts/*/channel-identities/*"
+        }
+      }
+    },
+    "typeContactEvent": {
+      "type": "object",
+      "title": "Message originating from a contact",
+      "properties": {
+        "composing_event": {
+          "$ref": "#/definitions/typeComposingEvent"
+        }
+      }
+    },
+    "typeContactMessage": {
+      "type": "object",
+      "title": "Message originating from a contact",
+      "properties": {
+        "choice_response_message": {
+          "$ref": "#/definitions/typeChoiceResponseMessage"
+        },
+        "location_message": {
+          "$ref": "#/definitions/typeLocationMessage"
+        },
+        "media_message": {
+          "$ref": "#/definitions/typeMediaMessage"
+        },
+        "text_message": {
+          "$ref": "#/definitions/typeTextMessage"
+        }
+      }
+    },
+    "typeConversation": {
+      "type": "object",
+      "properties": {
+        "active": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "active_channel": {
+          "$ref": "#/definitions/typeConversationChannel"
+        },
+        "app": {
+          "type": "string",
+          "title": "App resource name\nnamespaces/*/apps/*"
+        },
+        "contact": {
+          "type": "string",
+          "title": "Contact resource name\nnamespaces/*/contacts/*"
+        },
+        "last_received": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "metadata": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string",
+          "title": "Conversation resource name\nnamespaces/*/apps/*/conversations/*"
+        }
+      }
+    },
+    "typeConversationApp": {
+      "type": "object",
+      "properties": {
+        "app": {
+          "type": "string"
+        },
+        "callback_type": {
+          "$ref": "#/definitions/typeCallbackType"
+        },
+        "callback_url": {
+          "type": "string"
+        },
+        "channel_credentials": {
+          "type": "array",
+          "title": "Channel credentials",
+          "items": {
+            "$ref": "#/definitions/typeConversationChannelCredential"
+          }
+        },
+        "channel_priority_order": {
+          "description": "Optional. Default channel priority order for the app.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/typeConversationChannel"
+          }
+        },
+        "create_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "include_conversation_metadata": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "name": {
+          "type": "string",
+          "title": "namespaces/*/conversationapps/*"
+        },
+        "namespace": {
+          "type": "string"
+        },
+        "update_time": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "typeConversationChannel": {
+      "type": "string",
+      "default": "CHANNEL_UNSPECIFIED",
+      "enum": [
+        "CHANNEL_UNSPECIFIED",
+        "WHATSAPP",
+        "RCS",
+        "XMS"
+      ]
+    },
+    "typeConversationChannelCredential": {
+      "type": "object",
+      "properties": {
+        "channel": {
+          "$ref": "#/definitions/typeConversationChannel"
+        },
+        "channel_sender": {
+          "type": "string",
+          "title": "Optional from field to use as a sender on a channel\nE.g. XMS uses this"
+        },
+        "name": {
+          "type": "string",
+          "title": "Credential resource name.\nnamespaces/*/apps/*/channel-credentials/*"
+        },
+        "static_bearer": {
+          "$ref": "#/definitions/typeStaticBearerCredential"
+        }
+      }
+    },
+    "typeConversationDirection": {
+      "type": "string",
+      "default": "UNDEFINED_DIRECTION",
+      "enum": [
+        "UNDEFINED_DIRECTION",
+        "TO_APP",
+        "TO_CONTACT"
+      ]
+    },
+    "typeConversationEvent": {
+      "type": "object",
+      "properties": {
+        "accept_time": {
+          "type": "string",
+          "format": "date-time",
+          "title": "Output only"
+        },
+        "app_event": {
+          "$ref": "#/definitions/typeAppEvent"
+        },
+        "channel": {
+          "$ref": "#/definitions/typeConversationChannel"
+        },
+        "contact_event": {
+          "$ref": "#/definitions/typeContactEvent"
+        },
+        "direction": {
+          "$ref": "#/definitions/typeConversationDirection"
+        }
+      }
+    },
+    "typeConversationMessage": {
+      "type": "object",
+      "properties": {
+        "accept_time": {
+          "type": "string",
+          "format": "date-time",
+          "title": "Output only"
+        },
+        "app_message": {
+          "$ref": "#/definitions/typeAppMessage"
+        },
+        "channel": {
+          "$ref": "#/definitions/typeConversationChannel"
+        },
+        "contact": {
+          "type": "string",
+          "title": "Required. The contact specified in the message associated with this delivery report.\nnamespaces/*/contacts/*"
+        },
+        "contact_message": {
+          "$ref": "#/definitions/typeContactMessage"
+        },
+        "conversation": {
+          "type": "string",
+          "title": "Required. The conversation which this delivery report if part of.\nnamespaces/*/apps/*/conversations/*"
+        },
+        "direction": {
+          "$ref": "#/definitions/typeConversationDirection"
+        },
+        "metadata": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string",
+          "title": "namespaces/*/apps/*/conversations/*/messages/*/"
+        }
+      }
+    },
+    "typeDeliveryReport": {
+      "type": "object",
+      "properties": {
+        "channel": {
+          "$ref": "#/definitions/typeConversationChannel"
+        },
+        "message": {
+          "type": "string",
+          "title": "Required. The message resource name that this update belongs to.\nnamespaces/*/apps/*/conversations/*/messages/*"
+        },
+        "reason": {
+          "type": "string",
+          "title": "Optional. Additional information about the status update"
+        },
+        "status": {
+          "title": "Required. The delivery status",
+          "$ref": "#/definitions/typeStatus"
+        }
+      }
+    },
+    "typeLocation": {
+      "type": "object",
+      "properties": {
+        "label": {
+          "description": "Optional. Label or name for the position.",
+          "type": "string"
+        },
+        "latitude": {
+          "description": "Required. The latitude.",
+          "type": "string"
+        },
+        "longitude": {
+          "description": "Required. The longitude.",
+          "type": "string"
+        }
+      }
+    },
+    "typeLocationMessage": {
+      "type": "object",
+      "properties": {
+        "location": {
+          "description": "Required.",
+          "$ref": "#/definitions/conversationapitypeLocation"
+        }
+      }
+    },
+    "typeMediaMessage": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "description": "Required. Url to the file.",
+          "type": "string"
+        }
+      }
+    },
+    "typeStaticBearerCredential": {
+      "type": "object",
+      "properties": {
+        "claimed_identity": {
+          "description": "Required. Claimed identity.",
+          "type": "string"
+        },
+        "token": {
+          "description": "Required. Static bearer token.",
+          "type": "string"
+        }
+      }
+    },
+    "typeStatus": {
+      "description": "The status of a message. Note that not all statuses\nare sent by the different channels.",
+      "type": "string",
+      "default": "STATUS_UNSPECIFIED",
+      "enum": [
+        "STATUS_UNSPECIFIED",
+        "QUEUED",
+        "DISPATCHED",
+        "QUEUED_ON_CHANNEL",
+        "DELIVERED",
+        "READ",
+        "FAILED",
+        "SWITCHING_CHANNEL"
+      ]
+    },
+    "typeTemplateMessage": {
+      "type": "object",
+      "properties": {
+        "parameters": {
+          "description": "Optional. Required if the template\nhas parameters. Concrete values must\nbe present for all defined parameters\nin the template.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "template_id": {
+          "description": "Required.",
+          "type": "string"
+        }
+      }
+    },
+    "typeTextMessage": {
+      "type": "object",
+      "properties": {
+        "text": {
+          "description": "Required. The text to be sent.",
+          "type": "string"
+        }
+      }
+    },
+    "typeUrlMessage": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "description": "Required. The url to show.",
+          "type": "string"
+        }
+      }
+    },
+    "v1alpha1Capability": {
+      "type": "object",
+      "properties": {
+        "channels": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/typeConversationChannel"
+          }
+        }
+      }
+    },
+    "v1alpha1ConversationMessagesView": {
+      "description": "To be decided what this views actually mean.",
+      "type": "string",
+      "default": "CONVERSATION_VIEW_UNSPECIFIED",
+      "enum": [
+        "CONVERSATION_VIEW_UNSPECIFIED",
+        "BASIC",
+        "FULL"
+      ]
+    },
+    "v1alpha1CreateAppRequest": {
+      "type": "object",
+      "properties": {
+        "app": {
+          "$ref": "#/definitions/typeConversationApp"
+        },
+        "namespace": {
+          "type": "string",
+          "title": "Required. Owning namespace resouce name.\nnamespaces/*"
+        }
+      }
+    },
+    "v1alpha1CreateContactRequest": {
+      "type": "object",
+      "properties": {
+        "contact": {
+          "description": "Required. The contact to be added.",
+          "$ref": "#/definitions/conversationapitypeContact"
+        },
+        "namespace": {
+          "type": "string",
+          "title": "Required. The namespace resource name of the new contact.\nnamespaces/*"
+        }
+      }
+    },
+    "v1alpha1ListConversationsResponse": {
+      "type": "object",
+      "properties": {
+        "conversations": {
+          "description": "Output only. List of conversations matching the search query.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/typeConversation"
+          },
+          "readOnly": true
+        },
+        "next_page_token": {
+          "type": "string"
+        },
+        "total_size": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "v1alpha1ListMessagesResponse": {
+      "type": "object",
+      "properties": {
+        "messages": {
+          "description": "Output only. List of messages associated to the referenced conversation.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/typeConversationMessage"
+          },
+          "readOnly": true
+        },
+        "next_page_token": {
+          "type": "string"
+        }
+      }
+    },
+    "v1alpha1MergeContactRequest": {
+      "type": "object",
+      "properties": {
+        "destination": {
+          "type": "string",
+          "title": "Required. The Contact resouce name that should be kept.\nnamespaces/*/contacts/*"
+        },
+        "source": {
+          "type": "string",
+          "title": "Required. The Contact resouce name that should be removed.\nnamespaces/*/contacts/*"
+        }
+      }
+    },
+    "v1alpha1SendEventRequest": {
+      "type": "object",
+      "properties": {
+        "app": {
+          "type": "string",
+          "title": "Required. The sending app's resource name.\nnamespaces/*/apps/*"
+        },
+        "channel_priority_order": {
+          "description": "Optional. Channel priority order that dictates on which channels the\nConversation API should try to send the message on. The order provided\nhere overrides any default.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/typeConversationChannel"
+          }
+        },
+        "contact": {
+          "type": "string",
+          "title": "Required. The receiving contact's resource name.\nnamespaces/*/contacts/*"
+        },
+        "event": {
+          "description": "Required. The event to send.",
+          "$ref": "#/definitions/typeAppEvent"
+        },
+        "request_id": {
+          "description": "Optional. Two requests, sufficiently close in time, with the same\nrequest_id will only result in one event.",
+          "type": "string"
+        }
+      }
+    },
+    "v1alpha1SendEventResponse": {
+      "type": "object",
+      "properties": {
+        "accepted_time": {
+          "description": "Output only. Accepted timestamp.",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        },
+        "event_id": {
+          "description": "Output only. Event id.",
+          "type": "string",
+          "readOnly": true
+        }
+      }
+    },
+    "v1alpha1SendMessageRequest": {
+      "type": "object",
+      "properties": {
+        "app": {
+          "type": "string",
+          "title": "Required. The sending app's resource name.\nnamespaces/*/apps/*"
+        },
+        "callback_url": {
+          "type": "string",
+          "title": "Optional. Overwrites the default callback url for delivery reports for this message\nThe REST URL should be of the form: scheme://host[:port]/path\nwhere scheme is http or https.\nThe gRPC URL should be of the form: dns://host[:port]\nSee:\nhttps://github.com/grpc/grpc/blob/master/doc/naming.md"
+        },
+        "channel_priority_order": {
+          "description": "Optional. Channel priority order that dictates on which channels the\nConversation API should try to send the message on. The order provided\nhere overrides any default.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/typeConversationChannel"
+          }
+        },
+        "contact": {
+          "type": "string",
+          "title": "Required. The receiving contact's resource name.\nnamespaces/*/contacts/*"
+        },
+        "message": {
+          "description": "Required. The message to send.",
+          "$ref": "#/definitions/typeAppMessage"
+        },
+        "message_metadata": {
+          "description": "Optional. Eventual metadata that should be associated to the message.\nThe provided metadata will be sent back in the Delivery Reports for this\nmessage.",
+          "type": "string"
+        },
+        "request_id": {
+          "description": "Optional. Two requests, sufficiently close in time, with the same\nrequest_id will only result in one message.",
+          "type": "string"
+        }
+      }
+    },
+    "v1alpha1SendMessageResponse": {
+      "type": "object",
+      "properties": {
+        "accepted_time": {
+          "description": "Output only. Timestamp corresponding to when the Conversation API\naccepted the message for delivery to the referenced contact.",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        },
+        "message_id": {
+          "description": "Output only. Message id.",
+          "type": "string",
+          "readOnly": true
+        }
+      }
+    },
+    "v1alpha1StopActiveConversationRequest": {
+      "type": "object",
+      "properties": {
+        "conversation": {
+          "type": "string",
+          "title": "Required. The resource name of the Conversation that should be stopped.\nnamespaces/*/apps/*/conversations/*"
+        }
+      }
+    },
+    "v1alpha1TranscodeMessageRequest": {
+      "type": "object",
+      "properties": {
+        "app": {
+          "type": "string",
+          "title": "Required. The resource name of the app.\nnamespaces/*/apps/*"
+        },
+        "app_message": {
+          "description": "Required. The message that should be transcoded.",
+          "$ref": "#/definitions/typeAppMessage"
+        },
+        "channels": {
+          "description": "Required. The list of channels for which the message shall be transcoded to.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/typeConversationChannel"
+          }
+        }
+      }
+    },
+    "v1alpha1TranscodeMessageResponse": {
+      "type": "object",
+      "properties": {
+        "transcoded_message": {
+          "description": "Output only. The transcoded message for the different channels.\nThe keys in the map correspond to channel names, as defined by the type\nConversationChannel.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "readOnly": true
+        }
+      }
+    },
+    "v1alpha1UpdateAppRequest": {
+      "type": "object",
+      "properties": {
+        "app": {
+          "$ref": "#/definitions/typeConversationApp"
+        },
+        "update_mask": {
+          "$ref": "#/definitions/protobufFieldMask"
+        }
+      }
+    },
+    "v1alpha1UpdateContactRequest": {
+      "type": "object",
+      "properties": {
+        "contact": {
+          "description": "Required. The updated contact.",
+          "$ref": "#/definitions/conversationapitypeContact"
+        },
+        "update_mask": {
+          "description": "Required. Field mask indicating what parts of the contact that should\nbe updated.",
+          "$ref": "#/definitions/protobufFieldMask"
+        }
+      }
+    },
+    "v1alpha1UpdateConversationRequest": {
+      "type": "object",
+      "properties": {
+        "conversation": {
+          "title": "Required. The updated conversation.\nnamespaces/*/apps/*/conversations/*",
+          "$ref": "#/definitions/typeConversation"
+        },
+        "update_mask": {
+          "description": "Required. The update mask indicating what parts of the conversation\nthat should be updated.",
+          "$ref": "#/definitions/protobufFieldMask"
+        }
+      }
+    }
+  }
+}
