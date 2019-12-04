@@ -87,7 +87,7 @@ paths:
         Send a RCS message, optionally falling back to SMS depending on provided conditions.
 
         A fallback SMS can be delivered if:
-          - The targeted device doesn't support RCS (controlled by the `rcs_unavailable` condition)
+          - The targeted device doesn't support RCS (controlled by the |rcs_unavailable` condition)
           - The targeted device doesn't support the specific RCS capability needed to deliver the message provided in the message body (controlled by the `capability_unsupported` condition)
           - The RCS platform doesn't receive a delivery confirmation before the provided expiration time. It's possible to configure if the original RCS message should be revoked when a message expires (controlled by the `expired` condition)
           - The RCS message cannot reliably be delivered because of an error within the RCS platform or the downstream suppliers. (controlled by the `agent_error` condition)
