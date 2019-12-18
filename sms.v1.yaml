@@ -43,8 +43,6 @@ paths:
         Any groups targeted in a scheduled batch will be evaluated at the time of sending. If a group is deleted between batch creation and scheduled date it will be considered empty.
       tags:
         - SMS
-      security:
-        - apitoken: []
       requestBody:
         content:
           application/json:
@@ -237,6 +235,8 @@ paths:
         name: service_plan_id
         in: path
         required: true
+    tags:
+      - SMS
     get:
       summary: Incoming Messages
       tags: []
@@ -753,7 +753,7 @@ components:
   securitySchemes:
     apitoken:
       type: http
-      scheme: Bearer
+      scheme: bearer
       description: ''
   parameters:
     service_plan_id:
