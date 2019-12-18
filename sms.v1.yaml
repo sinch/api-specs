@@ -44,7 +44,7 @@ paths:
       tags:
         - SMS
       security:
-        - API Key: []
+        - apikey: []
       requestBody:
         content:
           application/json:
@@ -750,9 +750,9 @@ paths:
 components:
   schemas: {}
   securitySchemes:
-    API Key:
+    apikey:
       type: http
-      scheme: Bearer
+      scheme: bearer
       description: ''
   parameters:
     service_plan_id:
