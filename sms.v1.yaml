@@ -230,11 +230,6 @@ paths:
         description: ''
       description: With the list operation you can list batch messages created in the last 14 days that you have created. This operation supports pagination.
   '/xms/v1/{service_plan_id}/inbounds':
-    parameters:
-      - type: string
-        name: service_plan_id
-        in: path
-        required: true
     tags:
       - SMS
     get:
@@ -297,6 +292,11 @@ paths:
                             Formated as ISO-8601.
       operationId: Inbounds
       parameters:
+        - schema:
+           type: integer
+          name: service_plan_id
+          in: path
+          required: true
         - schema:
             type: integer
           in: query
