@@ -10,8 +10,8 @@ info:
     name: MIT
   description: 'he most feature rich API that Sinch offers is the SMS REST API. Single messages, scheduled batch send-outs, using message templates and more.'
 servers:
-  - url: 'http://localhost:3000'
-    description: localhost
+  - url: 'https://us.sms.api.sinch.com/'
+    description: General api
 paths:
   '/xms/v1/{service_plan_id}/batches':
     post:
@@ -44,7 +44,7 @@ paths:
       tags:
         - SMS
       security:
-        - apikey: []
+        - apitoken: []
       requestBody:
         content:
           application/json:
@@ -147,7 +147,7 @@ paths:
         required: true
     get:
       summary: List Batches
-      operationId: List_Messages
+      operationId: ListBatches
       responses:
         '200':
           description: OK
@@ -228,6 +228,7 @@ paths:
                 end_date:
                   type: string
                   description: 'Only list messages received before this date time formated as [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601)'
+            examples: {}
         description: ''
       description: With the list operation you can list batch messages created in the last 14 days that you have created. This operation supports pagination.
   '/xms/v1/{service_plan_id}/inbounds':
@@ -750,9 +751,9 @@ paths:
 components:
   schemas: {}
   securitySchemes:
-    apikey:
+    apitoken:
       type: http
-      scheme: bearer
+      scheme: Bearer
       description: ''
   parameters:
     service_plan_id:
