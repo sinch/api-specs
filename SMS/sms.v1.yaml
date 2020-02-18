@@ -8,18 +8,29 @@ info:
     email: Support@sinch.com
   license:
     name: MIT
-  description: 'he most feature rich API that Sinch offers is the SMS REST API. Single messages, scheduled batch send-outs, using message templates and more.'
+    url: 'https://www.sinch.com/toc'
+  description: 'The most feature rich API that Sinch offers is the SMS REST API. Single messages, scheduled batch send-outs, using message templates and more.'
 servers:
-  - url: 'https://us.sms.api.sinch.com/'
+  - url: 'https://us.sms.api.sinch.com'
     description: General api
+x-explorer-enabled: false
+x-samples-languages:
+  - curl
+  - java
+  - csharp
+  - node
 paths:
   '/xms/v1/{service_plan_id}/batches':
     post:
+      tags:
+        - Sending SMS
       summary: Send
+      security:
+        - apiToken: []
       operationId: SendSMS
       responses:
-        '200':
-          description: OK
+        '201':
+          description: Created
           content:
             application/json:
               schema:
@@ -30,19 +41,23 @@ paths:
                     description: Unique identifier for batch.
                   created_at:
                     type: string
+                    format: date-time
                     description: "\tTimestamp for when batch was created."
                   modified_at:
                     type: string
+                    format: date-time
                     description: Timestamp for when batch was last updated.
                   canceled:
                     type: boolean
                     description: Indicates if the batch has been canceled or not.
+        '400':
+          description: 'There was an error with your request. The body is a JSON object described in rest_http_errors. Possible error codes include syntax_invalid_json, syntax_invalid_parameter_format and syntax_constraint_violation.'
+        '403':
+          description: 'The system was not able to fulfill your request. The body is a JSON object described in rest_http_errors. Possible error codes include unknown_group, unknown_campaign and missing_callback_url.'
       description: |-
         Send an SMS message, Depending on the length of the body one message might be split into [multiple parts](https://developers.sinch.com/docs/sms-rest-message-body#section-long-messages) and charged accordingly.
 
         Any groups targeted in a scheduled batch will be evaluated at the time of sending. If a group is deleted between batch creation and scheduled date it will be considered empty.
-      tags:
-        - SMS
       requestBody:
         content:
           application/json:
@@ -51,32 +66,47 @@ paths:
               properties:
                 to:
                   type: string
-                  description: List of MSISDNs and group IDs that will receive the batch.
+                  description: List of Phone numbers and group IDs that will receive the batch.
                   example: '+15551231234'
                 from:
                   type: string
-                  description: "Sender number. \n\nIf Automatic Default Originator not configured.\n"
+                  description: |
+                    Sender number. 
+
+                    If Automatic Default Originator not configured.
                 type:
                   type: string
                   default: mt_text
+                  enum:
+                    - mt_text
+                    - mt_binary
                   description: Identifies the type of batch message.
                 body:
                   type: string
-                  description: "The message content. Normal text string for mt_text and Base64 encoded for mt_binary. \n\nMax 1600 chars for mt_text and max 140 bytes together with udh for mt_binary."
+                  description: |-
+                    The message content. Normal text string for mt_text and Base64 encoded for mt_binary. 
+
+                    Max 1600 chars for mt_text and max 140 bytes together with udh for mt_binary.
                 udh:
                   type: string
-                  description: "The UDH header of a binary message. Max 140 bytes together with body. \n\nRequired iftype is mt_binary."
-                campain_id:
-                  type: string
-                  description: "The campaign/service ID this message belongs to. \n\nUS only.\t"
+                  description: |-
+                    The UDH header of a binary message. Max 140 bytes together with body. 
+
+                    Required if type is mt_binary.
                 delivery_report:
                   type: string
+                  enum:
+                    - summary
+                    - full 
+                    - per_recipient
                   description: "Request delivery report callback. \n\nNote that delivery reports can be fetched from the API regardless of this setting. \n\nValid types are none, summary, full and per_recipient\t"
                 send_at:
                   type: string
+                  format: date-time
                   description: "If set in the future the message will be delayed until send_at occurs.\n\nMust be before expire_at. \n \nIf set in the past messages will be sent immediately.\t"
                 expire_at:
                   type: string
+                  format: date-time
                   default: 3 days after send_at
                   description: |-
                     If set the system will stop trying to deliver the message at this point.
@@ -98,8 +128,13 @@ paths:
 
                     true or false.
                 parameters:
-                  type: object
-                  description: "Contains the parameters that will be used for customizing the message for each recipient. \n\nNot applicable to if type is mt_binary\n\n[Click here to learn more about parameters](https://developers.sinch.com/docs/sms-rest-parameterization)"
+                  type: array
+                  description: |-
+                    Contains the parameters that will be used for customizing the message for each recipient. 
+
+                    Not applicable to if type is mt_binary
+
+                    [Click here to learn more about parameters](https://developers.sinch.com/docs/sms-rest-parameterization)
                   properties:
                     '{parameter_key}':
                       type: string
@@ -126,7 +161,7 @@ paths:
 
                     Max 128 characters long
                 max_number_of_message_parts:
-                  type: string
+                  type: integer
                   description: |-
                     Message will be dispatched only if it is not split to more parts than Max Number of Message Parts
 
@@ -138,14 +173,14 @@ paths:
                 - delivery_report
         description: ''
     parameters:
-      - schema:
-          type: string
-        name: service_plan_id
-        in: path
-        required: true
+      - $ref: '#/components/parameters/service_plan_id'
     get:
       summary: List Batches
       operationId: ListBatches
+      tags:
+        - Batches
+      security:
+        - apiToken: []
       responses:
         '200':
           description: OK
@@ -174,12 +209,14 @@ paths:
                           description: Unique identifier for batch
                         created_at:
                           type: string
+                          format: date-time
                           description: |-
                             Timestamp for when batch was created.
 
                             ISO-8601 format
                         modified_at:
                           type: string
+                          format: date-time
                           description: |-
                             Timestamp for when batch was last updated.
 
@@ -187,54 +224,47 @@ paths:
                         canceled:
                           type: boolean
                           description: Indicates if the batch has been canceled or not.
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                page:
-                  description: |-
-                    The page number starting from 0.
+      parameters:
+        - name: page
+          description: The page number starting from 0.
+          schema:
+            type: integer
+          in: query
+        - name: page_size
+          schema:
+            type: integer
+          in: query
+          description: |-
+            Determines the size of a page.
+            Default: 30
+            Constraints: max 100
+        - name: to
+          in: query
+          schema:
+            type: string
+          description: 'nly list messages set to this destination. Multiple phone numbers formated as [e164](https://en.wikipedia.org/wiki/E.164) can be comma separated. '
+        - name: start_date
+          in: query
+          schema:
+            type: string
+          description: |-
+            Only list messages received at or after this date time formated as [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601)
 
-                    Default:
-                    0
-
-                    Constraints:
-                    0 or larger
-                  type: integer
-                page_size:
-                  type: integer
-                  description: |-
-                    Determines the size of a page.
-
-                    Default:
-                    30
-
-                    Constraints:
-                    max 100
-                to:
-                  type: string
-                  description: 'nly list messages set to this destination. Multiple phone numbers formated as [e164](https://en.wikipedia.org/wiki/E.164) can be comma separated. '
-                start_date:
-                  type: string
-                  description: |-
-                    Only list messages received at or after this date time formated as [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601)
-
-                    Default:
-                    Now-24
-                end_date:
-                  type: string
-                  description: 'Only list messages received before this date time formated as [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601)'
-            examples: {}
-        description: ''
+            Default:
+            Now-24
+        - name: end_date
+          in: query
+          schema:
+            type: string
+          description: 'Only list messages received before this date time formated as [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601)'
       description: With the list operation you can list batch messages created in the last 14 days that you have created. This operation supports pagination.
   '/xms/v1/{service_plan_id}/inbounds':
-    tags:
-      - SMS
     get:
       summary: Incoming Messages
-      tags: []
+      tags:
+        - Receive SMS
+      security:
+        - apiToken: []
       responses:
         '200':
           description: OK
@@ -277,31 +307,36 @@ paths:
                           description: 'Message body, Base64 encoded if type is mo_binary.'
                         operator_id:
                           type: string
-                          description: "The MCCMNC of the sender's operator if known."
+                          description: The MCCMNC of the sender's operator if known.
                         sent_at:
                           type: string
+                          format: date-time
                           description: |-
                             When the message left the originating device. Only available if provided by operator.
 
                             Formated as ISO-8601.
                         recieved_at:
                           type: string
+                          format: date-time
                           description: |-
                             When the system received the message.
 
                             Formated as ISO-8601.
       operationId: Inbounds
       parameters:
-        - schema:
-           type: integer
-          name: service_plan_id
-          in: path
-          required: true
+        - $ref: '#/components/parameters/service_plan_id'
         - schema:
             type: integer
           in: query
           name: page
-          description: "The page number starting from 0\n\nconstraints: \n0 or larger\n\nDefault:\n0"
+          description: |-
+            The page number starting from 0
+
+            constraints: 
+            0 or larger
+
+            Default:
+            0
         - schema:
             type: integer
           in: query
@@ -336,18 +371,14 @@ paths:
       description: 'Inbounds, or Mobile Originated messages, are incoming messages. Inbound messages can be listed and retrieved like batch messages and they can also be delivered by callback requests like delivery reports.'
   '/xms/v1/{service_plan_id}/batches/dry_run':
     parameters:
-      - type: string
-        name: service_plan_id
-        in: path
-        required: true
-    get:
-      summary: Your GET endpoint
-      tags: []
-      responses: {}
-      operationId: 'get-xms-v1-{service_plan_id}-batches-dry_run'
+      - $ref: '#/components/parameters/service_plan_id'
     post:
-      summary: ''
+      security:
+        - apiToken: []
+      summary: Dry run
       operationId: Dry_Run
+      tags:
+        - Batches
       responses:
         '200':
           description: OK
@@ -388,17 +419,26 @@ paths:
                   example: '+15551231234'
                 from:
                   type: string
-                  description: "Sender number. \n\nIf Automatic Default Originator not configured.\n"
+                  description: |
+                    Sender number. 
+
+                    If Automatic Default Originator not configured.
                 type:
                   type: string
                   default: mt_text
                   description: Identifies the type of batch message.
                 body:
                   type: string
-                  description: "The message content. Normal text string for mt_text and Base64 encoded for mt_binary. \n\nMax 1600 chars for mt_text and max 140 bytes together with udh for mt_binary."
+                  description: |-
+                    The message content. Normal text string for mt_text and Base64 encoded for mt_binary. 
+
+                    Max 1600 chars for mt_text and max 140 bytes together with udh for mt_binary.
                 udh:
                   type: string
-                  description: "The UDH header of a binary message. Max 140 bytes together with body. \n\nRequired iftype is mt_binary."
+                  description: |-
+                    The UDH header of a binary message. Max 140 bytes together with body. 
+
+                    Required iftype is mt_binary.
                 campain_id:
                   type: string
                   description: "The campaign/service ID this message belongs to. \n\nUS only.\t"
@@ -407,9 +447,11 @@ paths:
                   description: "Request delivery report callback. \n\nNote that delivery reports can be fetched from the API regardless of this setting. \n\nValid types are none, summary, full and per_recipient\t"
                 send_at:
                   type: string
+                  format: date-time
                   description: "If set in the future the message will be delayed until send_at occurs.\n\nMust be before expire_at. \n \nIf set in the past messages will be sent immediately.\t"
                 expire_at:
                   type: string
+                  format: date-time
                   default: 3 days after send_at
                   description: |-
                     If set the system will stop trying to deliver the message at this point.
@@ -432,7 +474,12 @@ paths:
                     true or false.
                 parameters:
                   type: object
-                  description: "Contains the parameters that will be used for customizing the message for each recipient. \n\nNot applicable to if type is mt_binary\n\n[Click here to learn more about parameters](https://developers.sinch.com/docs/sms-rest-parameterization)"
+                  description: |-
+                    Contains the parameters that will be used for customizing the message for each recipient. 
+
+                    Not applicable to if type is mt_binary
+
+                    [Click here to learn more about parameters](https://developers.sinch.com/docs/sms-rest-parameterization)
                   properties:
                     '{parameter_key}':
                       type: string
@@ -474,29 +521,29 @@ paths:
             type: boolean
           in: query
           name: per_recipient
+          description: Whether to include per recipient details in the response
         - schema:
             type: integer
           in: query
           name: number_of_recipients
+          description: Max number of recipients to include per recipient details for in the response
       description: This operation will perform a dry run of a batch which calculates the bodies and number of parts for all messages in the batch without actually sending any messages.
-  '/xms/v1/{service_plan_id}/batches/{id}':
+  '/xms/v1/{service_plan_id}/batches/{batch_id}':
     parameters:
-      - type: string
-        name: service_plan_id
+      - $ref: '#/components/parameters/service_plan_id'
+      - schema:
+          type: string
+        name: batch_id
         in: path
         required: true
-      - type: string
-        name: id
-        in: path
-        required: true
-    get:
-      summary: Your GET endpoint
-      tags: []
-      responses: {}
-      operationId: 'get-xms-v1-{service_plan_id}-batches-{id}'
+        description: The id you got from the post batches.
     post:
-      summary: ''
-      operationId: Batches_ID
+      summary: Update a Batch message
+      operationId: UpdateBatchMessage
+      tags:
+        - Batches
+      security:
+        - apiToken: []
       responses:
         '200':
           description: OK
@@ -534,18 +581,20 @@ paths:
 
                     Constraints:
                     Max 1600 chars for mt_text and max 140 bytes together with udh for mt_binary
-                campaign_id:
-                  type: string
-                  description: The campaign/service ID this message belongs to. US only.
                 delivery_report:
                   type: string
+                  enum:
+                    - summary
+                    - full 
+                    - per_recipient                  
                   description: |-
                     Request delivery report callback. Note that delivery reports can be fetched from the API regardless of this setting.
 
-                    Constraintas:
+                    Constraints:
                     Valid types are none, summary, full and per_recipient
                 send_at:
                   type: string
+                  format: date-time
                   description: |-
                     f set in the future the message will be delayed until send_at occurs. ISO-8601 format.
 
@@ -553,6 +602,7 @@ paths:
                     Must be before expire_at. If set in the past messages will be sent immediately.
                 expire_at:
                   type: string
+                  format: date-time
                   description: |-
                     If set the system will stop trying to deliver the message at this point.
 
@@ -569,19 +619,50 @@ paths:
                     Constraints:
                     Must be valid URL. Max 2048 characters long.
       description: This operation will update all provided parameters of a batch for the given batch ID.
+    delete:
+      summary: Cancel a batch message
+      operationId: CencelBatchMessage
+      tags:
+        - Batches
+      security:
+        - apiToken: []      
+      responses:
+        '200':
+          description: Batch deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: Unique identifier for batch.
+                  created_at:
+                    type: string
+                    format: date-time
+                    description: "\tTimestamp for when batch was created."
+                  modified_at:
+                    type: string
+                    format: date-time
+                    description: Timestamp for when batch was last updated.
+                  canceled:
+                    type: boolean
+                    description: Indicates if the batch has been canceled or not.
   '/xms/v1/{service_plan_id}/batches/{batch_id}/delivery_report':
     parameters:
-      - type: string
-        name: service_plan_id
-        in: path
-        required: true
-      - type: string
+      - $ref: '#/components/parameters/service_plan_id'
+      - schema:
+          type: string
         name: batch_id
         in: path
         required: true
+        description: Id from from post to /batches
     get:
-      summary: Your GET endpoint
-      tags: []
+      summary: Retrieve a delivery report
+      security:
+        - apiToken: []
+      tags:
+        - Delivery reports
       responses:
         '200':
           description: OK
@@ -620,13 +701,19 @@ paths:
                   client_reference:
                     type: string
                     description: 'The client identifier of the batch this delivery report belongs to, if set when submitting batch.'
-      operationId: Delivery_report
+      operationId: GetDeliveryReportByBatchId
       parameters:
         - schema:
             type: string
           in: query
           name: type
-          description: "The type of delivery report. \n\nConstraints:\nMust be summarty or full\n\nDefault:\nsummary"
+          description: |-
+            The type of delivery report. 
+            Constraints:
+            Must be summary or full
+
+            Default:
+            summary
           required: true
         - schema:
             type: string
@@ -641,21 +728,25 @@ paths:
       description: Delivery reports can be retrieved even if no callback was requested. The difference between a summary and a full report is only that the full report contains the actual MSISDNs for each status code.
   '/xms/v1/{service_plan_id}/batches/{batch_id}/delivery_report/{recipient_msisdn}':
     parameters:
-      - type: string
-        name: service_plan_id
-        in: path
-        required: true
-      - type: string
+      - $ref: '#/components/parameters/service_plan_id'
+      - schema:
+          type: string
         name: batch_id
         in: path
         required: true
-      - type: string
+        description: Id from from post to /batches
+      - schema:
+          type: string
         name: recipient_msisdn
         in: path
         required: true
+        description: Phone number you want to search for
     get:
-      summary: Your GET endpoint
-      tags: []
+      summary: Retrieve a recipient delivery report
+      security:
+        - apiToken: []
+      tags:
+        - Delivery reports
       responses:
         '200':
           description: OK
@@ -684,12 +775,14 @@ paths:
                     description: 'A description of the status, if available.'
                   at:
                     type: string
+                    format: date-time
                     description: |-
                       A timestamp of when the Delivery Report was created in the Sinch service.
 
                       ISO-8601 format
                   operator_status_at:
                     type: string
+                    format: date-time
                     description: "A timestamp extracted from the Delivery Receipt from the originating SMSC.\n\t\nISO-8601 format"
                   client_reference:
                     type: string
@@ -727,9 +820,11 @@ paths:
                     description: 'A description of the status, if available.'
                   at:
                     type: string
+                    format: date-time
                     description: "\tA timestamp of when the Delivery Report was created in the Sinch service"
                   operator_status_at:
                     type: string
+                    format: date-time
                     description: |-
                       A timestamp extracted from the Delivery Receipt from the originating SMSC
 
@@ -746,12 +841,249 @@ paths:
                   number_of_message_parts:
                     type: integer
                     description: The number of parts the message was split into. Present only if max_number_of_message_parts parameter was set.
-      operationId: Delivery_report_recipient_Phone_Number
+      operationId: GetDeliveryReportByPhoneNumber
       description: A recipient delivery report contains the message status for a single recipient phone number.
+  '/xms/v1/{service_plan_id}/groups':
+    parameters:
+      - $ref: '#/components/parameters/service_plan_id'
+    get:
+      summary: List Groups
+      operationId: ListGroups
+      security:
+        - apiToken: []
+      tags:
+        - Groups
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  page:
+                    type: integer
+                  page_size:
+                    type: integer
+                  count:
+                    type: integer
+                  groups:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                          description: |-
+                            name of the group
+
+                            constraints:
+                            max 20 characters
+      parameters:
+        - schema:
+            type: integer
+          in: query
+          name: page
+          description: |-
+            The page number starting from 0
+
+            Constraints: 
+            0 or larger
+
+            Default:
+            0
+        - schema:
+            type: integer
+          in: query
+          name: page_size
+          description: |-
+            Determines the size of a page
+
+            Constraints:
+            Max 100
+
+            Default:
+            30
+    post:
+      summary: Create group
+      operationId: CreateGroup
+      security:
+        - apiToken: []
+      tags:
+        - Groups
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: The ID used to reference this group
+                  name:
+                    type: string
+                    description: Name of group if set
+                  size:
+                    type: integer
+                    description: The number of members currently in the group
+                  created_at:
+                    type: string
+                    format: date-time
+                    description: |-
+                      Timestamp for when the group was created.
+
+                      ISO-8601 format
+                  modifed_at:
+                    type: string
+                    format: date-time
+                    description: |-
+                      Timestamp for when the group was last modified.
+
+                      ISO-8601 format
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: |-
+                    Name of the group
+
+                    constraints: 
+                    max 20 characters
+                members:
+                  type: array
+                  description: "Initial list of phpne numbers for the group.\n\nConstraints:\nElements must be phone numbers\nMax 10,000 elements\t"
+                  items:
+                    type: string
+                child_groups auto_update: 
+                auto_update.remove.second_word:
+                  type: string
+                  description: |-
+                    Opt-out keyword like "LEAVE" if auto_update.to is shared short code.
+
+                    Constraints:
+                    Must be one word. Max 15 characters
+  '/xms/v1/{service_plan_id}/groups/{group_id}':
+    parameters:
+      - $ref: '#/components/parameters/service_plan_id'
+      - $ref: '#/components/parameters/group_id'
+    post:
+      security:
+        - apiToken: []
+      tags:
+        - Groups
+      summary: Update a group
+      operationId: UpdateGroup
+      responses:
+        '200':
+          description: OK
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                add:
+                  type: array
+                  description: |-
+                    phone numbers to add as members.
+
+                    Constraints:
+                    Elements must be phone numbers.
+                     Max 10 000 elements.
+                  items:
+                    type: string
+                remove:
+                  type: array
+                  description: |-
+                    phone numbers to remove from group.
+
+                    Constraints:
+                    Elements must be phone numbers. 
+                    Max 10 000 elements.
+                  items:
+                    type: string
+                name:
+                  type: string
+                  description: "Name of group.\n\t\nConstraints:\nMax 20 characters"
+                add_from_group:
+                  type: string
+                  description: |-
+                    Copy the members from the given group into this group.
+
+                    Constraints:
+                    Must be valid group ID
+                remove_from_group:
+                  type: string
+                  description: |-
+                    Remove members in the given group from group.
+
+                    Constraints:
+                    Must be valid group ID
+    put:
+      security:
+        - apiToken: []
+      summary: Replace a group
+      operationId: ReplaceGroup
+      tags:
+        - Groups
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    description: |-
+                      Name of group.
+
+                      Constraints:
+                      Max 20 characters
+                  members:
+                    type: array
+                    description: |-
+                      The initial members of the group.
+
+                      Constraints:
+                      Elements must be phone numbers. 
+                      Max 10 000 elements.
+                    items:
+                      type: string
+                required:
+                  - members
+  '/xms/v1/{service_plan_id}/groups/{group_id}/members':
+    parameters:
+      - $ref: '#/components/parameters/service_plan_id'
+      - $ref: '#/components/parameters/group_id'
+    get:
+      summary: Get phone numbers for a group
+      security:
+        - apiToken: []
+      operationId: GetMembers
+      tags:
+        - Groups
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                description: Array of phone numbers
+                items:
+                  type: string
 components:
   schemas: {}
   securitySchemes:
-    apitoken:
+    apiToken:
       type: http
       scheme: bearer
       description: ''
@@ -764,8 +1096,17 @@ components:
         type: string
       description: The service id you wan tto use
       example: 34jklj34piiuui234lllj
+    group_id:
+      name: group_id
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Id of a group that you are interested in
 tags:
   - name: SMS
-    description: Detailed infomration about SMS and content that you can send in SMS
+    description: Detailed information about SMS and content that you can send in SMS
     externalDocs:
       url: 'http://developers.sinch.com.com/docs/sms/sms-rest'
+x-proxy-enabled: true
+x-samples-enabled: true
