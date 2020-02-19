@@ -56,7 +56,6 @@ paths:
           description: 'The system was not able to fulfill your request. The body is a JSON object described in rest_http_errors. Possible error codes include unknown_group, unknown_campaign and missing_callback_url.'
       description: |-
         Send an SMS message, Depending on the length of the body one message might be split into [multiple parts](https://developers.sinch.com/docs/sms-rest-message-body#section-long-messages) and charged accordingly.
-
         Any groups targeted in a scheduled batch will be evaluated at the time of sending. If a group is deleted between batch creation and scheduled date it will be considered empty.
       requestBody:
         content:
