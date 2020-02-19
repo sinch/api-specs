@@ -65,15 +65,20 @@ paths:
               type: object
               properties:
                 to:
-                  type: string
+                  type: array
+                  minItems: 1
+                  maxItems: 1000
+                  items:
+                    $ref: "#/components/schemas/msisdn"
                   description: List of Phone numbers and group IDs that will receive the batch.
-                  example: '+15551231234'
+                  example: ['+15551231234', '+15551256344']
                 from:
                   type: string
                   description: |
-                    Sender number. 
+                    Sender number.
 
                     If Automatic Default Originator not configured.
+                  example: '+15551231234'
                 type:
                   type: string
                   default: mt_text
@@ -81,23 +86,26 @@ paths:
                     - mt_text
                     - mt_binary
                   description: Identifies the type of batch message.
+                  example: mt_text
                 body:
                   type: string
                   description: |-
-                    The message content. Normal text string for mt_text and Base64 encoded for mt_binary. 
+                    The message content. Normal text string for mt_text and Base64 encoded for mt_binary.
 
                     Max 1600 chars for mt_text and max 140 bytes together with udh for mt_binary.
+                  example: 'This is a message to be sent!'
                 udh:
                   type: string
                   description: |-
-                    The UDH header of a binary message. Max 140 bytes together with body. 
+                    The UDH header of a binary message. Max 140 bytes together with body.
 
                     Required if type is mt_binary.
                 delivery_report:
                   type: string
                   enum:
+                    - none
                     - summary
-                    - full 
+                    - full
                     - per_recipient
                   description: "Request delivery report callback. \n\nNote that delivery reports can be fetched from the API regardless of this setting. \n\nValid types are none, summary, full and per_recipient\t"
                 send_at:
@@ -114,6 +122,7 @@ paths:
                      Must be after send_at. 3 days after send_at.
                 callback_url:
                   type: string
+                  maxLength: 2048
                   description: |-
                     Override the default callback URL for this batch.
 
@@ -128,9 +137,9 @@ paths:
 
                     true or false.
                 parameters:
-                  type: array
+                  type: object
                   description: |-
-                    Contains the parameters that will be used for customizing the message for each recipient. 
+                    Contains the parameters that will be used for customizing the message for each recipient.
 
                     Not applicable to if type is mt_binary
 
@@ -138,30 +147,36 @@ paths:
                   properties:
                     '{parameter_key}':
                       type: string
+                      maxLength: 16
+                      pattern: '^[A-Za-z0-9_\-.]+$'
                       description: |-
                         The name of the parameter that will be replaced in the message body.
 
                         Letters A-Z and a-z, digits 0-9 and .-_ allowed. Max 16 characters long
                     '{parameter_key}.{msisdn}':
                       type: string
+                      maxLength: 160
                       description: |-
                         The recipient that should get this value
 
                         Max 160 characters long
                     '{parameter_key}.default':
                       type: string
+                      maxLength: 160
                       description: |-
                         The fall back value for omitted recipient MSISDNs
 
                         Max 160 characters long
                 client_reference:
                   type: string
+                  maxLength: 128
                   description: |-
                     The client identifier of batch message. If set, it will be added in the delivery report/callback of this batch
 
                     Max 128 characters long
                 max_number_of_message_parts:
                   type: integer
+                  minimum: 1
                   description: |-
                     Message will be dispatched only if it is not split to more parts than Max Number of Message Parts
 
@@ -193,12 +208,15 @@ paths:
                   page:
                     type: integer
                     description: The requested page.
+                    example: 1
                   count:
                     type: integer
                     description: The total number of batches matching the given filters.
+                    example: 2000
                   page_size:
                     type: integer
                     description: The number of batches returned in this request
+                    example: 50
                   batches:
                     type: array
                     items:
@@ -224,15 +242,24 @@ paths:
                         canceled:
                           type: boolean
                           description: Indicates if the batch has been canceled or not.
+                    example:
+                      id: HwuejKoI82w
+                      created_at: '2016-10-02T09:34:18.542Z'
+                      modified_at: '2016-10-06T09:34:18.542Z'
+                      canceled: false
       parameters:
         - name: page
           description: The page number starting from 0.
           schema:
             type: integer
           in: query
+          example: 4
         - name: page_size
           schema:
             type: integer
+            default: 30
+            maximum: 100
+          example: 50
           in: query
           description: |-
             Determines the size of a page.
@@ -242,7 +269,8 @@ paths:
           in: query
           schema:
             type: string
-          description: 'nly list messages set to this destination. Multiple phone numbers formated as [e164](https://en.wikipedia.org/wiki/E.164) can be comma separated. '
+          example: +43243534234, +32434234456
+          description: 'Only list messages set to this destination. Multiple phone numbers formated as [e164](https://en.wikipedia.org/wiki/E.164) can be comma separated. '
         - name: start_date
           in: query
           schema:
@@ -277,12 +305,15 @@ paths:
                   page:
                     type: integer
                     description: The requested page.
+                    example: 1
                   page_size:
                     type: integer
                     description: The number of inbounds returned in this request.
+                    example: 50
                   count:
                     type: integer
                     description: The total number of inbounds matching the given filters
+                    example: 100
                   inbounds:
                     type: array
                     description: The page of inbounds matching the given filters
@@ -293,18 +324,23 @@ paths:
                         type:
                           type: string
                           description: The object type. Either mo_text or mo_binary.
+                          example: mo_text
                         id:
                           type: string
                           description: The ID of this inbound message.
+                          example: HYtJKLlsI32IK
                         from:
                           type: string
                           description: The originator phone number
+                          example: +11203494390
                         to:
                           type: string
                           description: The destination phone number or short code.
+                          example: +11203453453
                         body:
                           type: string
                           description: 'Message body, Base64 encoded if type is mo_binary.'
+                          example: This is a test message
                         operator_id:
                           type: string
                           description: The MCCMNC of the sender's operator if known.
@@ -327,18 +363,22 @@ paths:
         - $ref: '#/components/parameters/service_plan_id'
         - schema:
             type: integer
+            minimum: 0
+            default: 0
           in: query
           name: page
           description: |-
             The page number starting from 0
 
-            constraints: 
+            constraints:
             0 or larger
 
             Default:
             0
         - schema:
             type: integer
+            maximum: 100
+            default: 30
           in: query
           name: page_size
           description: |-
@@ -351,11 +391,14 @@ paths:
             30
         - schema:
             type: string
+            example: +14155553421, +13435552671, +14325552677
           in: query
           name: to
           description: 'Only list messages set to this destination. Multiple phone numbers formated as [e164](https://en.wikipedia.org/wiki/E.164) can be comma separated. '
         - schema:
             type: string
+            default: Now-24
+            format: ISO-8601
           in: query
           name: start_date
           description: |-
@@ -365,6 +408,8 @@ paths:
             Now-24
         - schema:
             type: string
+            format: ISO-8601
+            example: '2016-10-02T09:34:18.542Z'
           in: query
           name: end_date
           description: 'Only list messages received before this date time formated as [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601)'
@@ -414,36 +459,43 @@ paths:
               type: object
               properties:
                 to:
-                  type: string
-                  description: List of MSISDNs and group IDs that will receive the batch.
-                  example: '+15551231234'
+                  type: array
+                  minItems: 1
+                  maxItems: 1000
+                  items:
+                    type: string
+                  description: List of Phone numbers and group IDs that will receive the batch.
+                  example: ['+15551231234', '+15551256344']
                 from:
                   type: string
                   description: |
-                    Sender number. 
+                    Sender number.
 
                     If Automatic Default Originator not configured.
                 type:
                   type: string
                   default: mt_text
+                  enum:
+                    - mt_text
+                    - mt_binary
                   description: Identifies the type of batch message.
+                  example: mt_text
                 body:
                   type: string
+                  maxLength: 1600
                   description: |-
-                    The message content. Normal text string for mt_text and Base64 encoded for mt_binary. 
+                    The message content. Normal text string for mt_text and Base64 encoded for mt_binary.
 
                     Max 1600 chars for mt_text and max 140 bytes together with udh for mt_binary.
                 udh:
                   type: string
                   description: |-
-                    The UDH header of a binary message. Max 140 bytes together with body. 
+                    The UDH header of a binary message. Max 140 bytes together with body.
 
                     Required iftype is mt_binary.
-                campain_id:
-                  type: string
-                  description: "The campaign/service ID this message belongs to. \n\nUS only.\t"
                 delivery_report:
                   type: string
+                  enum: [none, summary, full, per_recipient]
                   description: "Request delivery report callback. \n\nNote that delivery reports can be fetched from the API regardless of this setting. \n\nValid types are none, summary, full and per_recipient\t"
                 send_at:
                   type: string
@@ -459,12 +511,14 @@ paths:
                      Must be after send_at. 3 days after send_at.
                 callback_url:
                   type: string
+                  maxLength: 2048
                   description: |-
                     Override the default callback URL for this batch.
 
                     Must be valid URL.
 
                     Max 2048 characters long.
+                  example: "example.callback.com"
                 flash_message:
                   type: boolean
                   default: false
@@ -475,7 +529,7 @@ paths:
                 parameters:
                   type: object
                   description: |-
-                    Contains the parameters that will be used for customizing the message for each recipient. 
+                    Contains the parameters that will be used for customizing the message for each recipient.
 
                     Not applicable to if type is mt_binary
 
@@ -483,30 +537,36 @@ paths:
                   properties:
                     '{parameter_key}':
                       type: string
+                      maxLength: 16
+                      pattern: '^[A-Za-z0-9_\-.]+$'
                       description: |-
                         The name of the parameter that will be replaced in the message body.
 
                         Letters A-Z and a-z, digits 0-9 and .-_ allowed. Max 16 characters long
                     '{parameter_key}.{msisdn}':
                       type: string
+                      maxLength: 160
                       description: |-
                         The recipient that should get this value
 
                         Max 160 characters long
                     '{parameter_key}.default':
                       type: string
+                      maxLength: 160
                       description: |-
                         The fall back value for omitted recipient MSISDNs
 
                         Max 160 characters long
                 client_reference:
                   type: string
+                  maxLength: 128
                   description: |-
                     The client identifier of batch message. If set, it will be added in the delivery report/callback of this batch
 
                     Max 128 characters long
                 max_number_of_message_parts:
                   type: string
+                  minimum: 1
                   description: |-
                     Message will be dispatched only if it is not split to more parts than Max Number of Message Parts
 
@@ -519,11 +579,15 @@ paths:
       parameters:
         - schema:
             type: boolean
+            example: true
           in: query
           name: per_recipient
           description: Whether to include per recipient details in the response
         - schema:
             type: integer
+            maximum: 1000
+            default: 100
+            example: 500
           in: query
           name: number_of_recipients
           description: Max number of recipients to include per recipient details for in the response
@@ -547,6 +611,32 @@ paths:
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: Unique identifier for batch.
+                  created_at:
+                    type: string
+                    description: "\tTimestamp for when batch was created."
+                  modified_at:
+                    type: string
+                    description: Timestamp for when batch was last updated.
+                  canceled:
+                    type: boolean
+                    description: Indicates if the batch has been canceled or not.
+                example:
+                  id: 23dkdsKSDiwLPS4
+                  created_at: "2019-09-09"
+                  modified_at: "2019-09-10"
+                  canceled: false
+        '400':
+          description: 'There was an error with your request. The body is a JSON object described in rest_http_errors. Possible error codes include `syntax_invalid_json`, `syntax_invalid_parameter_format` and `syntax_constraint_violation.`'
+        '403':
+          description: 'The system was not able to fulfill your request. The body is a JSON object described in rest_http_errors. Possible error codes include `batch_already_dispatched`.'
       requestBody:
         content:
           application/json:
@@ -562,11 +652,15 @@ paths:
                     1 to 100 elements.
                   items:
                     type: string
+                  minItems: 1
+                  maxItems: 100
+                  example: ["+44531234233", "34234445434"]
                 toRemove:
                   description: "List of phone numbers and group IDs to remove from the batch.\t\n\nconstraints:\n1 to 100 elements."
                   type: array
                   items:
                     type: string
+                  example: ["+4453868734", "3423423432"]
                 from:
                   type: string
                   description: |-
@@ -574,19 +668,23 @@ paths:
 
                     Default:
                     Must be valid phone number, short code or alphanumeric.
+                  example: "+46342324894"
                 body:
                   type: string
+                  maxLength: 1600
                   description: |-
                     The message content. Normal text string for mt_text and Base64 encoded for mt_binary.
 
                     Constraints:
                     Max 1600 chars for mt_text and max 140 bytes together with udh for mt_binary
+                  example: "A text message!"
                 delivery_report:
                   type: string
                   enum:
+                    - none
                     - summary
-                    - full 
-                    - per_recipient                  
+                    - full
+                    - per_recipient
                   description: |-
                     Request delivery report callback. Note that delivery reports can be fetched from the API regardless of this setting.
 
@@ -603,6 +701,7 @@ paths:
                 expire_at:
                   type: string
                   format: date-time
+                  default: 3 days after send_at
                   description: |-
                     If set the system will stop trying to deliver the message at this point.
 
@@ -613,11 +712,13 @@ paths:
                     3 days after send_at
                 callback_url:
                   type: string
+                  maxLength: 2048
                   description: |-
                     Override the default callback URL for this batch.
 
                     Constraints:
                     Must be valid URL. Max 2048 characters long.
+                  example: "example.callback.com"
       description: This operation will update all provided parameters of a batch for the given batch ID.
     delete:
       summary: Cancel a batch message
@@ -625,7 +726,7 @@ paths:
       tags:
         - Batches
       security:
-        - apiToken: []      
+        - apiToken: []
       responses:
         '200':
           description: Batch deleted
@@ -648,11 +749,17 @@ paths:
                   canceled:
                     type: boolean
                     description: Indicates if the batch has been canceled or not.
+                example:
+                  id: 23dkdsKSDiwLPS4
+                  created_at: "2016-10-06T09:34:18.542Z"
+                  modified_at: "2016-10-07T09:34:18.542Z"
+                  canceled: true
   '/xms/v1/{service_plan_id}/batches/{batch_id}/delivery_report':
     parameters:
       - $ref: '#/components/parameters/service_plan_id'
       - schema:
           type: string
+          example: "OyHjkKTDE4E35"
         name: batch_id
         in: path
         required: true
@@ -681,34 +788,43 @@ paths:
                     type: string
                     description: The total number of messages for the batch
                   statuses:
-                    type: object
+                    type: array
                     description: Array with status objects. Only status codes with at least one recipient will be listed.
-                    properties:
-                      statuses.code:
-                        description: The detailed status code. See Error Codes
-                        type: integer
-                      statuses.status:
-                        type: string
-                        description: The simplified status as described in Delivery Report Statuses
-                      statuses.count:
-                        description: The number of messages that currently has this code. Will always be at least 1
-                        type: integer
-                      statuses.recipients:
-                        type: array
-                        description: Only for full report. A list of the phone number recipients which messages has this status code.
-                        items:
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          description: The detailed status code. See Error Codes
+                          type: integer
+                        status:
                           type: string
+                          description: The simplified status as described in Delivery Report Statuses
+                        count:
+                          description: The number of messages that currently has this code. Will always be at least 1
+                          type: integer
+                        recipients:
+                          type: array
+                          description: Only for full report. A list of the phone number recipients which messages has this status code.
+                          items:
+                            type: string
                   client_reference:
                     type: string
                     description: 'The client identifier of the batch this delivery report belongs to, if set when submitting batch.'
+                example:
+                  type:
+                  batch_id:
+                  total_message_count:
+                  statuses: [ {code: 200, status: 'ok', count: 20 000}, {code: 400, status: 'bad request', count: 1}]
       operationId: GetDeliveryReportByBatchId
       parameters:
         - schema:
             type: string
+            enum: [summary, full]
+            default: summary
           in: query
           name: type
           description: |-
-            The type of delivery report. 
+            The type of delivery report.
             Constraints:
             Must be summary or full
 
@@ -717,11 +833,13 @@ paths:
           required: true
         - schema:
             type: string
+            example: "Queued, Dispatched, Delivered"
           in: query
           name: status
           description: Comma separated list of delivery_report_statuses to include
         - schema:
             type: string
+            example: "400, 405"
           in: query
           name: code
           description: "\tComma separated list of delivery_receipt_error_codes to include"
@@ -731,12 +849,14 @@ paths:
       - $ref: '#/components/parameters/service_plan_id'
       - schema:
           type: string
+          example: "OyHjkKTDE4E35"
         name: batch_id
         in: path
         required: true
         description: Id from from post to /batches
       - schema:
           type: string
+          example: "+134848393506"
         name: recipient_msisdn
         in: path
         required: true
@@ -757,22 +877,29 @@ paths:
                 properties:
                   type:
                     type: string
+                    default: "_recipient_delivery_report_sms"
                     description: The object type. Will always be _recipient_delivery_report_sms
+                    example: "_recipient_delivery_report_sms"
                   batch_id:
                     type: string
                     description: "\tThe ID of the batch this delivery report belongs to"
+                    example: "OyHjkKTDE4E35"
                   recipient:
                     type: string
                     description: The recipient phone number
+                    example: "+44231235674"
                   code:
                     type: integer
                     description: "\tThe detailed status code. See Error Codes"
+                    example: 400
                   status:
                     type: string
                     description: The simplified status as described in Delivery Report Statuses
+                    example: "Bad request"
                   status_message:
                     type: string
                     description: 'A description of the status, if available.'
+                    example: 'Message is queued within REST API system and will be dispatched according to the rate of the account.'
                   at:
                     type: string
                     format: date-time
@@ -841,6 +968,8 @@ paths:
                   number_of_message_parts:
                     type: integer
                     description: The number of parts the message was split into. Present only if max_number_of_message_parts parameter was set.
+        '404':
+          description: Not found. The batch ID is not known to the system or the recipient is not a target of this batch.
       operationId: GetDeliveryReportByPhoneNumber
       description: A recipient delivery report contains the message status for a single recipient phone number.
   '/xms/v1/{service_plan_id}/groups':
@@ -870,30 +999,28 @@ paths:
                   groups:
                     type: array
                     items:
-                      type: object
-                      properties:
-                        name:
-                          type: string
-                          description: |-
-                            name of the group
-
-                            constraints:
-                            max 20 characters
+                      $ref: "#/components/schemas/groupObject"
       parameters:
         - schema:
             type: integer
+            minimum: 0
+            default: 0
           in: query
           name: page
           description: |-
             The page number starting from 0
 
-            Constraints: 
+            Constraints:
             0 or larger
 
             Default:
             0
+          example: 50
         - schema:
             type: integer
+            maximum: 100
+            minimum: 0
+            default: 30
           in: query
           name: page_size
           description: |-
@@ -904,6 +1031,7 @@ paths:
 
             Default:
             30
+          example: 50
     post:
       summary: Create group
       operationId: CreateGroup
@@ -942,32 +1070,17 @@ paths:
                       Timestamp for when the group was last modified.
 
                       ISO-8601 format
+                example:
+                  id: "HjIgBSNd23F"
+                  name: "Customers"
+                  size: 3000
+                  created_at: "2016-10-06T09:35:18.542Z"
+                  modified_at: "2016-10-08T09:34:18.542Z"
       requestBody:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                  description: |-
-                    Name of the group
-
-                    constraints: 
-                    max 20 characters
-                members:
-                  type: array
-                  description: "Initial list of phpne numbers for the group.\n\nConstraints:\nElements must be phone numbers\nMax 10,000 elements\t"
-                  items:
-                    type: string
-                child_groups auto_update: 
-                auto_update.remove.second_word:
-                  type: string
-                  description: |-
-                    Opt-out keyword like "LEAVE" if auto_update.to is shared short code.
-
-                    Constraints:
-                    Must be one word. Max 15 characters
+              $ref: "#/components/schemas/groupObject"
   '/xms/v1/{service_plan_id}/groups/{group_id}':
     parameters:
       - $ref: '#/components/parameters/service_plan_id'
@@ -990,6 +1103,7 @@ paths:
               properties:
                 add:
                   type: array
+                  maxItems: 10000
                   description: |-
                     phone numbers to add as members.
 
@@ -997,19 +1111,21 @@ paths:
                     Elements must be phone numbers.
                      Max 10 000 elements.
                   items:
-                    type: string
+                    $ref: "#/components/schemas/msisdn"
                 remove:
                   type: array
+                  maxItems: 10000
                   description: |-
                     phone numbers to remove from group.
 
                     Constraints:
-                    Elements must be phone numbers. 
+                    Elements must be phone numbers.
                     Max 10 000 elements.
                   items:
-                    type: string
+                    $ref: "#/components/schemas/msisdn"
                 name:
                   type: string
+                  maxLength: 20
                   description: "Name of group.\n\t\nConstraints:\nMax 20 characters"
                 add_from_group:
                   type: string
@@ -1042,6 +1158,7 @@ paths:
                 properties:
                   name:
                     type: string
+                    maxLength: 20
                     description: |-
                       Name of group.
 
@@ -1049,14 +1166,15 @@ paths:
                       Max 20 characters
                   members:
                     type: array
+                    maxItems: 10000
                     description: |-
                       The initial members of the group.
 
                       Constraints:
-                      Elements must be phone numbers. 
+                      Elements must be phone numbers.
                       Max 10 000 elements.
                     items:
-                      type: string
+                      $ref: "#/components/schemas/msisdn"
                 required:
                   - members
   '/xms/v1/{service_plan_id}/groups/{group_id}/members':
@@ -1076,12 +1194,30 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                description: Array of phone numbers
-                items:
-                  type: string
+                $ref: "#/components/schemas/groupObject"
 components:
-  schemas: {}
+  schemas:
+    groupObject:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 20
+          description: "Name of the group"
+        members:
+          type: array
+          maxItems: 10000
+          items:
+            $ref: "#/components/schemas/msisdn"
+          description: "Initial list of MSISDNs for the group."
+        auto_update.remove.second_word:
+          type: string
+          description: "Opt-out keyword like \"LEAVE\" if auto_update.to is shared short code.\n\nconstraints:\nMust be one word.\nMax 15 characters\t"
+    msisdn:
+      type: string
+      format: e164
+      description: "A phonenumber"
+      example: "+453234457784"
   securitySchemes:
     apiToken:
       type: http
