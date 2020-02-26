@@ -236,7 +236,7 @@ paths:
       description: This operation retrieves a specific inbound message with the provided inbound ID.
       operationId: RetrieveInboundMessage
       tags:
-        - Recieve SMS
+        - Receive SMS
       security:
         - apiToken: []
       responses:
