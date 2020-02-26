@@ -31,8 +31,10 @@ paths:
         - apiToken: []
       operationId: SendSMS
       description: |-
-        Send an SMS message, Depending on the length of the body one message might be split into [multiple parts](https://developers.sinch.com/docs/sms-rest-message-body#section-long-messages) and charged accordingly.
-        Any groups targeted in a scheduled batch will be evaluated at the time of sending. If a group is deleted between batch creation and scheduled date it will be considered empty.
+        Sinch SMS api enables you to add Fast and reliable global SMS to your applications.
+        If you want more  depth knowledge about SMS in general please read the [SMS Guides](https://developers.sinch.com/docs/sms-rest)
+        # Depending on the length of the body one message might be split into [multiple parts](https://developers.sinch.com/docs/sms-rest-message-body#section-long-messages) and charged accordingly.
+        # Any groups targeted in a scheduled batch will be evaluated at the time of sending. If a group is deleted between batch creation and scheduled date it will be considered empty.
       requestBody:
         content:
           application/json:
@@ -98,7 +100,7 @@ paths:
           schema:
             type: string
           example: +43243534234, +32434234456
-          description: 'Only list messages set to this destination. Multiple phone numbers formated as [e164](https://en.wikipedia.org/wiki/E.164) can be comma separated. '
+          description: 'Only list messages set to this destination. Multiple phone numbers formated as [e164](https://en.wikipedia.org/wiki/E.164) can be comma separated. For more [info](https://developers.sinch.com/docs/sms-rest#msisdn) '
         - name: start_date
           in: query
           schema:
@@ -149,7 +151,8 @@ paths:
       security:
         - apiToken: []
       operationId: Inbounds
-      description: 'Inbounds, or Mobile Originated messages, are incoming messages. Inbound messages can be listed and retrieved like batch messages and they can also be delivered by callback requests like delivery reports.'
+      description: 'Inbounds, or Mobile Originated messages, are incoming messages. Inbound messages can be listed and retrieved like batch messages and they can also be delivered by [callback requests](https://developers.sinch.com/docs/sms-rest#callback) like delivery reports.
+      More callback information: https://developers.sinch.com/docs/sms-rest#callback '
       parameters:
         - schema:
             type: integer
@@ -331,7 +334,7 @@ paths:
         description: Id from from post to /batches
     get:
       summary: Retrieve a delivery report
-      description: Delivery reports can be retrieved even if no callback was requested. The difference between a summary and a full report is only that the full report contains the phone numbers in [E164 format](https://en.wikipedia.org/wiki/E.164) for each status code.
+      description: 'Delivery reports can be retrieved even if no callback was requested. The difference between a summary and a full report is only that the full report contains the phone numbers in [E164 format](https://en.wikipedia.org/wiki/E.164) for each status code. Callback information: https://developers.sinch.com/docs/sms-rest#callback'
       security:
         - apiToken: []
       tags:
@@ -864,7 +867,7 @@ components:
           example: +11203494390
         to:
           type: string
-          description: The destination phone number or short code.
+          description: The destination phone number or short code. [More info](https://developers.sinch.com/docs/sms-rest#msisdn)
           example: +11203453453
         body:
           type: string
@@ -897,7 +900,7 @@ components:
           items:
             $ref: "#/components/schemas/msisdn"
           description: |-
-            List of Phone numbers and group IDs that will receive the batch.
+            List of Phone numbers and group IDs that will receive the batch. [More info](https://developers.sinch.com/docs/sms-rest#msisdn)
             Constraints: 1 to 1000 elements
           example: ['+15551231234', '+15551256344']
         from:
@@ -915,8 +918,8 @@ components:
             - mt_binary
           description: |-
             Identifies the type of batch message.
-            Default:
-            mt_text
+            Default: 
+            mt_text is regular SMS, mt_binary is a binary format. 
           example: mt_text
         body:
           type: string
@@ -995,7 +998,7 @@ components:
               type: string
               maxLength: 160
               description: |-
-                The fall back value for omitted recipient phonenumbers (MSISDNs)
+                The fall back value for omitted recipient phonenumbers ([MSISDNs](https://developers.sinch.com/docs/sms-rest#msisdn))
 
                 Max 160 characters long
         client_reference:
@@ -1043,7 +1046,7 @@ components:
             $ref: "#/components/schemas/msisdn"
           description: |-
             List of Phone numbers and group IDs that will receive the batch.
-            Constraints: 1 to 1000 elements
+            Constraints: 1 to 1000 elements [More info](https://developers.sinch.com/docs/sms-rest#msisdn)
           example: ['+15551231234', '+15551256344']
         from:
           type: string
@@ -1174,7 +1177,7 @@ components:
           maxItems: 10000
           items:
             $ref: "#/components/schemas/msisdn"
-          description: "Initial list of phone numbers in [E164 format](https://en.wikipedia.org/wiki/E.164) MSISDNs for the group."
+          description: "Initial list of phone numbers in [E164 format](https://en.wikipedia.org/wiki/E.164) [MSISDNs](https://developers.sinch.com/docs/sms-rest#msisdn) for the group."
         auto_update: 
           type: object
           properties:
