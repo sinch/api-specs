@@ -38,6 +38,12 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/sendBatchObject"
+            examples:
+              default:
+                value:
+                  from: '12345'
+                  to: ["+15551231212"]
+                  body: "Hello how are you"
         description: ''
       responses:
         '201':
@@ -50,6 +56,9 @@ paths:
                 default:
                   value: 
                     id: 'guid'
+                    from: '12345'
+                    to: ["+15551231212"]
+                    body: "Hello how are you"                    
                     created_at: '2020-02-25T23:01:01Z'
                     modified_at: '2020-02-25T23:01:01Z'
                     canceled: false 
@@ -881,27 +890,6 @@ components:
     sendBatchCreated:
       type: object
       properties:
-        id:
-          type: string
-          description: Unique identifier for batch
-        created_at: 
-          type: string
-          format: date-time
-          description: Timestamp for when batch was created. in [ISO-8601 string](https://en.wikipedia.org/wiki/ISO_8601)
-          example: "2020-02-25T23:01:01+00:00"
-        modified_at: 
-          type: string
-          format: date-time
-          description: Timestamp for when batch was modified. in [ISO-8601 string](https://en.wikipedia.org/wiki/ISO_8601)
-          example: "2020-02-25T23:01:01+00:00"
-        canceled:
-          type: boolean
-          description: Indicates if the batch has been canceled or not.
-          example: false
-        
-    sendBatchCreated_old:
-      type: object
-      properties:
         to:
           type: array
           minItems: 1
@@ -986,7 +974,7 @@ components:
 
             Not applicable to if type is mt_binary
 
-            [Click here to learn more about parameters](https://developers.sinch.com/docs/sms-rest-parameterization)
+            [Click here to learn more about parameters](https://developers.sinch.com/docs/sms-rest#parameterization)
           properties:
             '{parameter_key}':
               type: string
