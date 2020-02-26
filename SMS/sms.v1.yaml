@@ -1402,7 +1402,7 @@ components:
       name: service_plan_id
       schema:
         type: string
-      description: The service id you want to use
+      description: The service ID you want to use
       example: 34jklj34piiuui234lllj
     group_id:
       name: group_id
@@ -1410,7 +1410,7 @@ components:
       required: true
       schema:
         type: string
-      description: Id of a group that you are interested in
+      description: ID of a group that you are interested in
 tags:
   - name: SMS
     description: Detailed information about SMS and content that you can send in SMS
