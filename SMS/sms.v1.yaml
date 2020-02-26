@@ -35,6 +35,19 @@ paths:
         If you want more  depth knowledge about SMS in general please read the [SMS Guides](https://developers.sinch.com/docs/sms-rest)
         # Depending on the length of the body one message might be split into [multiple parts](https://developers.sinch.com/docs/sms-rest-message-body#section-long-messages) and charged accordingly.
         # Any groups targeted in a scheduled batch will be evaluated at the time of sending. If a group is deleted between batch creation and scheduled date it will be considered empty.
+      callbacks:
+        incomingSMS:
+          'Registered callback in the dashboard':
+            post:
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: "#/components/schemas/inboundResponseObject"
+              responses:
+                '200':
+                  description: Your server returns this code if it accepts the callback
       requestBody:
         content:
           application/json:
