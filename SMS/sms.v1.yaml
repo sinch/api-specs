@@ -308,7 +308,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/sendBatchCreated'
               examples:
-                default:
+                Default:
                   value:
                     id: 'guid'
                     from: '12345'
