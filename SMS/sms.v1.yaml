@@ -621,8 +621,33 @@ paths:
     parameters:
       - $ref: '#/components/parameters/service_plan_id'
       - $ref: '#/components/parameters/group_id'
+    get:
+      summary: Retrieve a group
+      description: This operation retrieves a specific group with the provided group ID.
+      operationId: RetrieveGroup
+      tags:
+        - Groups
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/createGroupResponse'
+        '404':
+          description: Not Found. The group ID is unknown to the system.
     post:
       summary: Update a group
+      description: |-
+        With the update group operation you can add and remove members to an existing group as well as rename the group.
+
+        The request will not be rejected for duplicate adds or unknown removes.
+
+        The adds will be done before the deletes so if an MSISDN is in both lists then it will not be part of the resulting group.
+
+        To remove an existing name set name explicitly to the JSON value null. Omitting name from the JSON body will leave the name unchanged.
+
+        Updating a group targeted by a batch message scheduled in the future is allowed and changes will be reflected until the batch is sent.
       operationId: UpdateGroup
       security:
         - apiToken: []
