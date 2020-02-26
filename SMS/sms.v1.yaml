@@ -48,7 +48,11 @@ paths:
                 $ref: "#/components/schemas/sendBatchCreated"
               examples:
                 default:
-                  $ref: "#/components/schemas/sendBatchCreated"
+                  value: 
+                    id: 'guid'
+                    created_at: '2020-02-25T23:01:01Z'
+                    modified_at: '2020-02-25T23:01:01Z'
+                    canceled: false 
                 
         '400':
           description: 'There was an error with your request. The body is a JSON object described in rest_http_errors. Possible error codes include syntax_invalid_json, syntax_invalid_parameter_format and syntax_constraint_violation.'
