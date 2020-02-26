@@ -307,7 +307,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/sendBatchCreated'
-              examples:
+              example:
                 id: 'guid'
                 from: '12345'
                 to: ["+15551231212"]
