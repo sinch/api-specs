@@ -1299,9 +1299,9 @@ components:
           properties:
             to:
               type: string
-              description: -|
-              Short code or long number addressed in MO.
-
+              description: |-
+                Short code or long number addressed in MO.
+                
                 Constraints:
                 Must be valid MSISDN or short code.
             add:
