@@ -389,6 +389,10 @@ paths:
     delete:
       summary: Cancel a batch message
       operationId: CencelBatchMessage
+      description: |-
+        A batch can be canceled at any point. If a batch is canceled while it's currently being delivered some messages currently being processed might still be delivered. The delivery report will indicate which messages were canceled and which weren't.
+
+        Canceling a batch scheduled in the future will result in an empty delivery report while canceling an already sent batch would result in no change to the completed delivery report.
       tags:
         - Batches
       security:
@@ -540,6 +544,10 @@ paths:
     get:
       summary: List Groups
       operationId: ListGroups
+      description: |-
+        With the list operation you can list all groups that you have created. This operation supports pagination.
+
+        Groups are returned in reverse chronological order.
       security:
         - apiToken: []
       tags:
@@ -597,6 +605,7 @@ paths:
     post:
       summary: Create group
       operationId: CreateGroup
+      description: |-
       security:
         - apiToken: []
       tags:
@@ -717,6 +726,10 @@ paths:
         - apiToken: []
       summary: Replace a group
       operationId: ReplaceGroup
+      description: |-
+        The replace operation will replace all parameters, including members, of an existing group with new values.
+
+        Replacing a group targeted by a batch message scheduled in the future is allowed and changes will be reflected when the batch is sent.
       tags:
         - Groups
       requestBody:
@@ -764,6 +777,8 @@ paths:
       - $ref: '#/components/parameters/group_id'
     get:
       summary: Get phone numbers for a group
+      description: |-
+        This operation retrieves the members of the group with the provided group ID.
       security:
         - apiToken: []
       operationId: GetMembers
