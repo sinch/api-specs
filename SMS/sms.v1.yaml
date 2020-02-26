@@ -227,6 +227,25 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/inboundResponseObject"
+  '/xms/v1/{service_plan_id}/inbounds/{inbound_id}':
+    parameters:
+      - $ref: '#/components/parameters/service_plan_id'
+      - $ref: '#/components/parameters/inbound_id'
+    get:
+      summary: Retrieve inbound message
+      description: This operation retrieves a specific inbound message with the provided inbound ID.
+      operationId: RetrieveInboundMessage
+      security:
+        - apiToken: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inboundResponseObject'
+        '404':
+          description: Not found. The inbound ID is unknown to the system.
   '/xms/v1/{service_plan_id}/batches/dry_run':
     parameters:
       - $ref: '#/components/parameters/service_plan_id'
@@ -1265,6 +1284,14 @@ components:
       scheme: bearer
       description: ''
   parameters:
+    inbound_id:
+      in: path
+      required: true
+      name: inbound_id
+      schema:
+        type: string
+      description: The inbound ID found when listing inbound messages.
+      example: 4HJJKIWKIJSJLlsk
     batch_id:
       in: path
       required: true
