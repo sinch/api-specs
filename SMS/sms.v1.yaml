@@ -308,7 +308,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/sendBatchCreated'
               examples:
-                Default:
+                default:
                   value:
                     id: 'guid'
                     from: '12345'
@@ -318,7 +318,7 @@ paths:
                     modified_at: '2020-02-25T23:01:01Z'
                     canceled: false
         '404':
-          description: Not found. The batch ID is unknown to the system.
+          description: Not found. The batch ID is unknown to the system.              
     post:
       summary: Update a Batch message
       operationId: UpdateBatchMessage
