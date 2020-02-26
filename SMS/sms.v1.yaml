@@ -69,15 +69,15 @@ paths:
                 $ref: "#/components/schemas/sendBatchCreated"
               examples:
                 default:
-                  value: 
+                  value:
                     id: 'guid'
                     from: '12345'
                     to: ["+15551231212"]
-                    body: "Hello how are you"                    
+                    body: "Hello how are you"
                     created_at: '2020-02-25T23:01:01Z'
                     modified_at: '2020-02-25T23:01:01Z'
-                    canceled: false 
-                
+                    canceled: false
+
         '400':
           description: 'There was an error with your request. The body is a JSON object described in rest_http_errors. Possible error codes include syntax_invalid_json, syntax_invalid_parameter_format and syntax_constraint_violation.'
         '403':
@@ -291,12 +291,24 @@ paths:
   '/xms/v1/{service_plan_id}/batches/{batch_id}':
     parameters:
       - $ref: '#/components/parameters/service_plan_id'
-      - schema:
-          type: string
-        name: batch_id
-        in: path
-        required: true
-        description: The id you got from the post batches.
+      - $ref: '#/components/parameters/batch_id'
+    get:
+      summary: Retrieve a batch message
+      operationId: RetriveBatchMessage
+      description: This operation retrieves a specific batch with the provided batch ID.
+      tags:
+        - Batches
+      security:
+        - apiToken: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/sendBatchCreated'
+        '404':
+          description: Not found. The batch ID is unknown to the system.
     post:
       summary: Update a Batch message
       operationId: UpdateBatchMessage
@@ -931,8 +943,8 @@ components:
             - mt_binary
           description: |-
             Identifies the type of batch message.
-            Default: 
-            mt_text is regular SMS, mt_binary is a binary format. 
+            Default:
+            mt_text is regular SMS, mt_binary is a binary format.
           example: mt_text
         body:
           type: string
@@ -1191,7 +1203,7 @@ components:
           items:
             $ref: "#/components/schemas/msisdn"
           description: "Initial list of phone numbers in [E164 format](https://en.wikipedia.org/wiki/E.164) [MSISDNs](https://developers.sinch.com/docs/sms-rest#msisdn) for the group."
-        auto_update: 
+        auto_update:
           type: object
           properties:
             to:
@@ -1221,13 +1233,21 @@ components:
       scheme: bearer
       description: ''
   parameters:
+    batch_id:
+      in: path
+      required: true
+      name: batch_id
+      schema:
+        type: string
+      description: The batch ID you got from sending a message.
+      example: 4HJY56SKIJSJLlsk
     service_plan_id:
       in: path
       required: true
       name: service_plan_id
       schema:
         type: string
-      description: The service id you wan tto use
+      description: The service id you want to use
       example: 34jklj34piiuui234lllj
     group_id:
       name: group_id
