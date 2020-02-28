@@ -28,7 +28,7 @@ paths:
         - Sending SMS
       summary: Send
       security:
-        - apiToken: []
+        - BearerAuth: []
       operationId: SendSMS
       description: |-
         Sinch SMS api enables you to add Fast and reliable global SMS to your applications.
@@ -89,7 +89,7 @@ paths:
       tags:
         - Batches
       security:
-        - apiToken: []
+        - BearerAuth: []
       parameters:
         - name: page
           description: The page number starting from 0.
@@ -162,7 +162,7 @@ paths:
       tags:
         - Receive SMS
       security:
-        - apiToken: []
+        - BearerAuth: []
       operationId: Inbounds
       description: 'Inbounds, or Mobile Originated messages, are incoming messages. Inbound messages can be listed and retrieved like batch messages and they can also be delivered by [callback requests](https://developers.sinch.com/docs/sms-rest#callback) like delivery reports.
       More callback information: https://developers.sinch.com/docs/sms-rest#callback '
@@ -238,7 +238,7 @@ paths:
       tags:
         - Receive SMS
       security:
-        - apiToken: []
+        - BearerAuth: []
       responses:
         '200':
           description: OK
@@ -253,7 +253,7 @@ paths:
       - $ref: '#/components/parameters/service_plan_id'
     post:
       security:
-        - apiToken: []
+        - BearerAuth: []
       summary: Dry run
       description: This operation will perform a dry run of a batch which calculates the bodies and number of parts for all messages in the batch without actually sending any messages.
       operationId: Dry_Run
@@ -320,7 +320,7 @@ paths:
       tags:
         - Batches
       security:
-        - apiToken: []
+        - BearerAuth: []
       responses:
         '200':
           description: OK
@@ -347,7 +347,7 @@ paths:
       tags:
         - Batches
       security:
-        - apiToken: []
+        - BearerAuth: []
       requestBody:
         content:
           application/json:
@@ -371,7 +371,7 @@ paths:
       tags:
         - Batches
       security:
-        - apiToken: []
+        - BearerAuth: []
       requestBody:
         content:
           application/json:
@@ -396,7 +396,7 @@ paths:
       tags:
         - Batches
       security:
-        - apiToken: []
+        - BearerAuth: []
       responses:
         '200':
           description: Batch deleted
@@ -418,7 +418,7 @@ paths:
       summary: Retrieve a delivery report
       description: 'Delivery reports can be retrieved even if no callback was requested. The difference between a summary and a full report is only that the full report contains the phone numbers in [E164 format](https://en.wikipedia.org/wiki/E.164) for each status code. Callback information: https://developers.sinch.com/docs/sms-rest#callback'
       security:
-        - apiToken: []
+        - BearerAuth: []
       tags:
         - Delivery reports
       operationId: GetDeliveryReportByBatchId
@@ -478,7 +478,7 @@ paths:
     get:
       summary: Retrieve a recipient delivery report
       security:
-        - apiToken: []
+        - BearerAuth: []
       tags:
         - Delivery reports
       operationId: GetDeliveryReportByPhoneNumber
@@ -549,7 +549,7 @@ paths:
 
         Groups are returned in reverse chronological order.
       security:
-        - apiToken: []
+        - BearerAuth: []
       tags:
         - Groups
       parameters:
@@ -607,7 +607,7 @@ paths:
       operationId: CreateGroup
       description: |-
       security:
-        - apiToken: []
+        - BearerAuth: []
       tags:
         - Groups
       requestBody:
@@ -659,7 +659,7 @@ paths:
         Updating a group targeted by a batch message scheduled in the future is allowed and changes will be reflected until the batch is sent.
       operationId: UpdateGroup
       security:
-        - apiToken: []
+        - BearerAuth: []
       tags:
         - Groups
       requestBody:
@@ -723,7 +723,7 @@ paths:
           description: Not found. If the group ID is unknown to the system.
     put:
       security:
-        - apiToken: []
+        - BearerAuth: []
       summary: Replace a group
       operationId: ReplaceGroup
       description: |-
@@ -780,7 +780,7 @@ paths:
       description: |-
         This operation retrieves the members of the group with the provided group ID.
       security:
-        - apiToken: []
+        - BearerAuth: []
       operationId: GetMembers
       tags:
         - Groups
@@ -1375,10 +1375,10 @@ components:
       description: "A phonenumber"
       example: "+453234457784"
   securitySchemes:
-    apiToken:
+    BearerAuth:
       type: http
       scheme: bearer
-      description: ''
+      description: 'Sinch security scheme'
   parameters:
     inbound_id:
       in: path
