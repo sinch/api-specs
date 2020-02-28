@@ -28,7 +28,7 @@ paths:
       tags:
         - Sending SMS
       summary: Send
-      security:s
+      security:
         - BearerAuth: []
       operationId: SendSMS
       description: |-
