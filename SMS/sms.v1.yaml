@@ -608,7 +608,7 @@ paths:
     post:
       summary: Create group
       operationId: CreateGroup
-      description: |-
+      description: A group is a set of MSISDNs that can be used as a target in the send_batch_msg operation. An MSISDN can only occur once in a group and any attempts to add a duplicate would be ignored but not rejected.
       security:
         - BearerAuth: []
       tags:
@@ -1416,7 +1416,7 @@ components:
         type: string
       description: ID of a group that you are interested in
 tags:
-  - name: SMS
+  - name: Sending SMS
     description: Detailed information about SMS and content that you can send in SMS
     externalDocs:
       url: 'http://developers.sinch.com.com/docs/sms/sms-rest'
