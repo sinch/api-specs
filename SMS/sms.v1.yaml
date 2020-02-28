@@ -13,7 +13,7 @@ info:
 servers:
   - url: 'https://us.sms.api.sinch.com'
     description: General api
-x-explorer-enabled: true
+x-explorer-enabled: false
 x-samples-enabled: true
 x-samples-languages:
   - curl
