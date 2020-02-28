@@ -20,8 +20,6 @@ x-samples-languages:
   - java
   - csharp
   - node
-x-headers: 
-  - authorization: Bearer asdfsadfsdafsdaf
 paths:
   '/xms/v1/{service_plan_id}/batches':
     parameters:
