@@ -24,6 +24,12 @@ paths:
   '/xms/v1/{service_plan_id}/batches':
     parameters:
       - $ref: '#/components/parameters/service_plan_id'
+      - name: Authorization 
+        in: header
+        required: true
+        schema: 
+          type: string
+        example: Bearer  {token}
     post:
       tags:
         - Sending SMS
@@ -114,13 +120,13 @@ paths:
           schema:
             type: string
           example: +43243534234, +32434234456
-          description: 'Only list messages set to this destination. Multiple phone numbers formated as [e164](https://en.wikipedia.org/wiki/E.164) can be comma separated. For more [info](https://developers.sinch.com/docs/sms-rest#msisdn) '
+          description: 'Only list messages set to this destination. Multiple phone numbers formatted as [e164](https://en.wikipedia.org/wiki/E.164) can be comma separated. For more [info](https://developers.sinch.com/docs/sms-rest#msisdn) '
         - name: start_date
           in: query
           schema:
             type: string
           description: |-
-            Only list messages received at or after this date time formated as [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601)
+            Only list messages received at or after this date time formatted as [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601)
 
             Default:
             Now-24
@@ -128,7 +134,13 @@ paths:
           in: query
           schema:
             type: string
-          description: 'Only list messages received before this date time formated as [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601)'
+          description: 'Only list messages received before this date time formatted as [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601)'
+        - name: Authorization 
+          in: header
+          required: true
+          schema: 
+            type: string
+          example: Bearer  {token}
       responses:
         '200':
           description: OK
@@ -168,6 +180,12 @@ paths:
       description: 'Inbounds, or Mobile Originated messages, are incoming messages. Inbound messages can be listed and retrieved like batch messages and they can also be delivered by [callback requests](https://developers.sinch.com/docs/sms-rest#callback) like delivery reports.
       More callback information: https://developers.sinch.com/docs/sms-rest#callback '
       parameters:
+        - name: Authorization 
+          in: header
+          required: true
+          schema: 
+            type: string
+          example: Bearer  {token}      
         - schema:
             type: integer
             minimum: 0
@@ -201,7 +219,7 @@ paths:
             example: +14155553421, +13435552671, +14325552677
           in: query
           name: to
-          description: 'Only list messages set to this destination. Multiple phone numbers formated as [e164](https://en.wikipedia.org/wiki/E.164) can be comma separated. '
+          description: 'Only list messages set to this destination. Multiple phone numbers formatted as [e164](https://en.wikipedia.org/wiki/E.164) can be comma separated. '
         - schema:
             type: string
             default: Now-24
@@ -209,7 +227,7 @@ paths:
           in: query
           name: start_date
           description: |-
-            Only list messages received at or after this date time formated as [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601)
+            Only list messages received at or after this date time formatted as [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601)
 
             Default:
             Now-24
@@ -219,7 +237,7 @@ paths:
             example: '2016-10-02T09:34:18.542Z'
           in: query
           name: end_date
-          description: 'Only list messages received before this date time formated as [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601)'
+          description: 'Only list messages received before this date time formatted as [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601)'
       responses:
         '200':
           description: OK
@@ -230,6 +248,12 @@ paths:
                 $ref: "#/components/schemas/inboundResponseObject"
   '/xms/v1/{service_plan_id}/inbounds/{inbound_id}':
     parameters:
+      - name: Authorization 
+        in: header
+        required: true
+        schema: 
+          type: string
+        example: Bearer  {token}
       - $ref: '#/components/parameters/service_plan_id'
       - $ref: '#/components/parameters/inbound_id'
     get:
@@ -251,6 +275,12 @@ paths:
           description: Not found. The inbound ID is unknown to the system.
   '/xms/v1/{service_plan_id}/batches/dry_run':
     parameters:
+      - name: Authorization 
+        in: header
+        required: true
+        schema: 
+          type: string
+        example: Bearer  {token}
       - $ref: '#/components/parameters/service_plan_id'
     post:
       security:
@@ -266,6 +296,12 @@ paths:
             schema:
               $ref: "#/components/schemas/sendBatchObject"
       parameters:
+        - name: Authorization 
+          in: header
+          required: true
+          schema: 
+            type: string
+          example: Bearer  {token}
         - schema:
             type: boolean
             example: true
@@ -290,7 +326,7 @@ paths:
                 properties:
                   number_of_recipients:
                     type: integer
-                    description: The number of recipents in the batch
+                    description: The number of recipients in the batch
                   number_of_messages:
                     type: integer
                     description: The total number of SMS message parts to be sent in the batch
@@ -312,12 +348,18 @@ paths:
           description: Bad request. There was an error with your request. The body is a JSON object described in rest_http_errors. Possible error codes include `syntax_invalid_json`, `syntax_invalid_parameter_format` and `syntax_constraint_violation`.
   '/xms/v1/{service_plan_id}/batches/{batch_id}':
     parameters:
+      - name: Authorization 
+        in: header
+        required: true
+        schema: 
+          type: string
+        example: Bearer  {token}
       - $ref: '#/components/parameters/service_plan_id'
       - $ref: '#/components/parameters/batch_id'
     get:
-      summary: Retrieve a batch message
-      operationId: RetriveBatchMessage
-      description: This operation retrieves a specific batch with the provided batch ID.
+      summary: Get a batch message
+      operationId: GetBatchMessage
+      description: This operation get a specific batch with the provided batch ID.
       tags:
         - Batches
       security:
@@ -389,7 +431,7 @@ paths:
           description: Bad request. There was an error with your request. The body is a JSON object described in rest_http_errors. Possible error codes include `syntax_invalid_json`, `syntax_invalid_parameter_format` and `syntax_constraint_violation.`
     delete:
       summary: Cancel a batch message
-      operationId: CencelBatchMessage
+      operationId: CancelBatchMessage
       description: |-
         A batch can be canceled at any point. If a batch is canceled while it's currently being delivered some messages currently being processed might still be delivered. The delivery report will indicate which messages were canceled and which weren't.
 
@@ -407,10 +449,16 @@ paths:
                 $ref: "#/components/schemas/sendBatchObject"
   '/xms/v1/{service_plan_id}/batches/{batch_id}/delivery_report':
     parameters:
+      - name: Authorization 
+        in: header
+        required: true
+        schema: 
+          type: string
+        example: Bearer  {token}
       - $ref: '#/components/parameters/service_plan_id'
       - schema:
           type: string
-          example: "OyHjkKTDE4E35"
+          example: "0d0fj329dk3dr"
         name: batch_id
         in: path
         required: true
@@ -424,6 +472,12 @@ paths:
         - Delivery reports
       operationId: GetDeliveryReportByBatchId
       parameters:
+        - name: Authorization 
+          in: header
+          required: true
+          schema: 
+            type: string
+          example: Bearer  {token}
         - schema:
             type: string
             enum: [summary, full]
@@ -461,10 +515,16 @@ paths:
           description: Not found. The batch ID is not known to the system or the delivery report type is not recognized.
   '/xms/v1/{service_plan_id}/batches/{batch_id}/delivery_report/{recipient_msisdn}':
     parameters:
+      - name: Authorization 
+        in: header
+        required: true
+        schema: 
+          type: string
+        example: Bearer  {token}
       - $ref: '#/components/parameters/service_plan_id'
       - schema:
           type: string
-          example: "OyHjkKTDE4E35"
+          example: "OyHjk0e04d4E35"
         name: batch_id
         in: path
         required: true
@@ -500,7 +560,7 @@ paths:
                   batch_id:
                     type: string
                     description: "\tThe ID of the batch this delivery report belongs to"
-                    example: "OyHjkKTDE4E35"
+                    example: "OyHj5kd95jed4E35"
                   recipient:
                     type: string
                     description: The recipient phone number
@@ -541,6 +601,12 @@ paths:
           description: Not found. The batch ID is not known to the system or the recipient is not a target of this batch.
   '/xms/v1/{service_plan_id}/groups':
     parameters:
+      - name: Authorization 
+        in: header
+        required: true
+        schema: 
+          type: string
+        example: Bearer  {token}
       - $ref: '#/components/parameters/service_plan_id'
     get:
       summary: List Groups
@@ -629,6 +695,12 @@ paths:
           description: Forbidden. The system was not able to fulfill your request. The body is a JSON object described in rest_http_errors. Possible error codes include conflict_group_name.
   '/xms/v1/{service_plan_id}/groups/{group_id}':
     parameters:
+      - name: Authorization 
+        in: header
+        required: true
+        schema: 
+          type: string
+        example: Bearer  {token}
       - $ref: '#/components/parameters/service_plan_id'
       - $ref: '#/components/parameters/group_id'
     get:
@@ -774,6 +846,12 @@ paths:
           description: Not found. If the group ID is unknown to the system.
   '/xms/v1/{service_plan_id}/groups/{group_id}/members':
     parameters:
+      - name: Authorization 
+        in: header
+        required: true
+        schema: 
+          type: string
+        example: Bearer  {token}
       - $ref: '#/components/parameters/service_plan_id'
       - $ref: '#/components/parameters/group_id'
     get:
@@ -817,7 +895,7 @@ components:
             Timestamp for when the group was created.
 
             ISO-8601 format
-        modifed_at:
+        modified_at:
           type: string
           format: date-time
           description: |-
@@ -868,7 +946,7 @@ components:
           description: 'The client identifier of the batch this delivery report belongs to, if set when submitting batch.'
       example:
         type: delivery_report_sms
-        batch_id: jkJsda60UKmskNHG432
+        batch_id: jkJ4da60UK6skNHG432
         total_message_count: "20000"
         statuses: [ {code: 200, status: 'ok', count: 20 000}, {code: 400, status: 'bad request', count: 1}]
     updateBatchReq:
@@ -1003,14 +1081,14 @@ components:
           description: |-
             When the message left the originating device. Only available if provided by operator.
 
-            Formated as ISO-8601.
-        recieved_at:
+            Formatted as ISO-8601.
+        received_at:
           type: string
           format: date-time
           description: |-
             When the system received the message.
 
-            Formated as ISO-8601.
+            Formatted as ISO-8601.
     sendBatchCreated:
       type: object
       properties:
@@ -1119,7 +1197,7 @@ components:
               type: string
               maxLength: 160
               description: |-
-                The fall back value for omitted recipient phonenumbers ([MSISDNs](https://developers.sinch.com/docs/sms-rest#msisdn))
+                The fall back value for omitted recipient phone numbers ([MSISDNs](https://developers.sinch.com/docs/sms-rest#msisdn))
 
                 Max 160 characters long
         client_reference:
@@ -1242,31 +1320,35 @@ components:
             Contains the parameters that will be used for customizing the message for each recipient.
 
             Not applicable to if type is mt_binary
-
+            'example :  "parameters: [{"name": {
+                "123456789": "Joe",
+                "default": "there"}]'
             [Click here to learn more about parameters](https://developers.sinch.com/docs/sms-rest-parameterization)
           properties:
             '{parameter_key}':
-              type: string
+              type: object
               maxLength: 16
               pattern: '^[A-Za-z0-9_\-.]+$'
               description: |-
                 The name of the parameter that will be replaced in the message body.
 
-                Letters A-Z and a-z, digits 0-9 and .-_ allowed. Max 16 characters long
-            '{parameter_key}.{msisdn}':
-              type: string
-              maxLength: 160
-              description: |-
-                The recipient that should get this value
-
-                Max 160 characters long
-            '{parameter_key}.default':
-              type: string
-              maxLength: 160
-              description: |-
-                The fall back value for omitted recipient MSISDNs
-
-                Max 160 characters long
+                Letters A-Z and a-z, digits 0-9 and .-_ allowed. Max 16 characters long.
+                
+              properties:
+               '{msisdn}':
+                type: string
+                maxLength: 160
+                example: '{"15551231212":"Joe"}'
+                description: |-
+                 The recipient that should get this value
+                 Max 160 characters long
+               'default':
+                 type: string
+                 maxLength: 160
+                 example: '{"default":"Customer"}'
+                 description: |-
+                  The fall back value for omitted recipient MSISDNs
+                  Max 160 characters long.
         client_reference:
           type: string
           maxLength: 128
@@ -1389,7 +1471,7 @@ components:
       schema:
         type: string
       description: The inbound ID found when listing inbound messages.
-      example: 4HJJKIWKIJSJLlsk
+      example: 4HJ5KI4KI6SJL3sk
     batch_id:
       in: path
       required: true
@@ -1397,7 +1479,7 @@ components:
       schema:
         type: string
       description: The batch ID you got from sending a message.
-      example: 4HJY56SKIJSJLlsk
+      example: 4HJY56S2r4t6c
     service_plan_id:
       in: path
       required: true
@@ -1405,7 +1487,7 @@ components:
       schema:
         type: string
       description: The service ID you want to use
-      example: 34jklj34piiuui234lllj
+      example: jd63jf88477ll
     group_id:
       name: group_id
       in: path
