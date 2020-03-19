@@ -20,16 +20,13 @@ x-samples-languages:
   - java
   - csharp
   - node
+x-headers:
+  - key: Authorization
+    value: "Bearer {token}"
 paths:
   '/xms/v1/{service_plan_id}/batches':
     parameters:
       - $ref: '#/components/parameters/service_plan_id'
-      - name: Authorization 
-        in: header
-        required: true
-        schema: 
-          type: string
-        example: Bearer  {token}
     post:
       tags:
         - Sending SMS
@@ -61,7 +58,7 @@ paths:
             schema:
               $ref: "#/components/schemas/sendBatchObject"
             examples:
-              default:
+              response:
                 value:
                   from: '12345'
                   to: ["+15551231212"]
@@ -135,12 +132,6 @@ paths:
           schema:
             type: string
           description: 'Only list messages received before this date time formatted as [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601)'
-        - name: Authorization 
-          in: header
-          required: true
-          schema: 
-            type: string
-          example: Bearer  {token}
       responses:
         '200':
           description: OK
@@ -180,12 +171,6 @@ paths:
       description: 'Inbounds, or Mobile Originated messages, are incoming messages. Inbound messages can be listed and retrieved like batch messages and they can also be delivered by [callback requests](https://developers.sinch.com/docs/sms-rest#callback) like delivery reports.
       More callback information: https://developers.sinch.com/docs/sms-rest#callback '
       parameters:
-        - name: Authorization 
-          in: header
-          required: true
-          schema: 
-            type: string
-          example: Bearer  {token}      
         - schema:
             type: integer
             minimum: 0
@@ -248,12 +233,6 @@ paths:
                 $ref: "#/components/schemas/inboundResponseObject"
   '/xms/v1/{service_plan_id}/inbounds/{inbound_id}':
     parameters:
-      - name: Authorization 
-        in: header
-        required: true
-        schema: 
-          type: string
-        example: Bearer  {token}
       - $ref: '#/components/parameters/service_plan_id'
       - $ref: '#/components/parameters/inbound_id'
     get:
@@ -275,12 +254,6 @@ paths:
           description: Not found. The inbound ID is unknown to the system.
   '/xms/v1/{service_plan_id}/batches/dry_run':
     parameters:
-      - name: Authorization 
-        in: header
-        required: true
-        schema: 
-          type: string
-        example: Bearer  {token}
       - $ref: '#/components/parameters/service_plan_id'
     post:
       security:
@@ -296,12 +269,6 @@ paths:
             schema:
               $ref: "#/components/schemas/sendBatchObject"
       parameters:
-        - name: Authorization 
-          in: header
-          required: true
-          schema: 
-            type: string
-          example: Bearer  {token}
         - schema:
             type: boolean
             example: true
@@ -348,12 +315,6 @@ paths:
           description: Bad request. There was an error with your request. The body is a JSON object described in rest_http_errors. Possible error codes include `syntax_invalid_json`, `syntax_invalid_parameter_format` and `syntax_constraint_violation`.
   '/xms/v1/{service_plan_id}/batches/{batch_id}':
     parameters:
-      - name: Authorization 
-        in: header
-        required: true
-        schema: 
-          type: string
-        example: Bearer  {token}
       - $ref: '#/components/parameters/service_plan_id'
       - $ref: '#/components/parameters/batch_id'
     get:
@@ -449,12 +410,6 @@ paths:
                 $ref: "#/components/schemas/sendBatchObject"
   '/xms/v1/{service_plan_id}/batches/{batch_id}/delivery_report':
     parameters:
-      - name: Authorization 
-        in: header
-        required: true
-        schema: 
-          type: string
-        example: Bearer  {token}
       - $ref: '#/components/parameters/service_plan_id'
       - schema:
           type: string
@@ -472,12 +427,6 @@ paths:
         - Delivery reports
       operationId: GetDeliveryReportByBatchId
       parameters:
-        - name: Authorization 
-          in: header
-          required: true
-          schema: 
-            type: string
-          example: Bearer  {token}
         - schema:
             type: string
             enum: [summary, full]
@@ -515,12 +464,6 @@ paths:
           description: Not found. The batch ID is not known to the system or the delivery report type is not recognized.
   '/xms/v1/{service_plan_id}/batches/{batch_id}/delivery_report/{recipient_msisdn}':
     parameters:
-      - name: Authorization 
-        in: header
-        required: true
-        schema: 
-          type: string
-        example: Bearer  {token}
       - $ref: '#/components/parameters/service_plan_id'
       - schema:
           type: string
@@ -601,12 +544,6 @@ paths:
           description: Not found. The batch ID is not known to the system or the recipient is not a target of this batch.
   '/xms/v1/{service_plan_id}/groups':
     parameters:
-      - name: Authorization 
-        in: header
-        required: true
-        schema: 
-          type: string
-        example: Bearer  {token}
       - $ref: '#/components/parameters/service_plan_id'
     get:
       summary: List Groups
@@ -695,12 +632,6 @@ paths:
           description: Forbidden. The system was not able to fulfill your request. The body is a JSON object described in rest_http_errors. Possible error codes include conflict_group_name.
   '/xms/v1/{service_plan_id}/groups/{group_id}':
     parameters:
-      - name: Authorization 
-        in: header
-        required: true
-        schema: 
-          type: string
-        example: Bearer  {token}
       - $ref: '#/components/parameters/service_plan_id'
       - $ref: '#/components/parameters/group_id'
     get:
@@ -805,6 +736,7 @@ paths:
         Replacing a group targeted by a batch message scheduled in the future is allowed and changes will be reflected when the batch is sent.
       tags:
         - Groups
+        - Multiple recipients
       requestBody:
         content:
           application/json:
@@ -846,12 +778,6 @@ paths:
           description: Not found. If the group ID is unknown to the system.
   '/xms/v1/{service_plan_id}/groups/{group_id}/members':
     parameters:
-      - name: Authorization 
-        in: header
-        required: true
-        schema: 
-          type: string
-        example: Bearer  {token}
       - $ref: '#/components/parameters/service_plan_id'
       - $ref: '#/components/parameters/group_id'
     get:
