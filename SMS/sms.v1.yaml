@@ -58,7 +58,7 @@ paths:
             schema:
               $ref: "#/components/schemas/sendBatchObject"
             examples:
-              response:
+              request:
                 value:
                   from: '12345'
                   to: ["+15551231212"]
@@ -72,7 +72,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/sendBatchCreated"
               examples:
-                default:
+                response:
                   value:
                     id: 'guid'
                     from: '12345'
@@ -333,9 +333,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/sendBatchCreated'
               examples:
-                default:
+                response:
                   value:
-                    id: 'guid'
+                    id: '9dfn32n423kljklj234'
                     from: '12345'
                     to: ["+15551231212"]
                     body: "Hello how are you"
