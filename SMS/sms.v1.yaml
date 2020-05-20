@@ -74,7 +74,7 @@ paths:
               examples:
                 response:
                   value:
-                    id: 'guid'
+                    id: 'string'
                     from: '12345'
                     to: ["+15551231212"]
                     body: "Hello how are you"
@@ -1173,6 +1173,7 @@ components:
             List of Phone numbers and group IDs that will receive the batch.
             Constraints: 1 to 1000 elements [More info](https://developers.sinch.com/docs/sms-rest#msisdn)
           example: ['+15551231234', '+15551256344']
+          default: ['+15551231234', '+15551256344']
         from:
           type: string
           description: |
