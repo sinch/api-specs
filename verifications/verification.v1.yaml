@@ -8,7 +8,7 @@ info:
     email: support@sinch.com
   termsOfService: 'https://www.sinch.com/terms-of-service/'
 servers:
-  - url: 'https://verificationapi-v1.sinch.com/verification/[version]'
+  - url: 'https://verificationapi-v1.sinch.com/verification/v1'
 tags:
   - name: Verifications
   - name: Callbacks
