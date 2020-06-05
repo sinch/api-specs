@@ -1,19 +1,52 @@
 openapi: 3.0.0
 info:
-  title: Verirication
-  version: '1.0.1'
+  title: Verifications
+  version: "1.0.1"
+  description: |
+    Verification REST API for verifying phone numbers and users. Support of FlashCall verification, PIN SMS verification and Callout verification.
+    **Note:** OTPCODE must be the full valid E.164 number that we called from.
+    ## Overview
+
+    For general information on how to use the Sinch APIs including methods, types, errors and authorization, please check the [Using REST](doc:using-rest) page.
+
+    Use the Sinch Verification Service to verify end-user's mobile phone numbers. The Sinch Verification APIs should be used in combination with the Verification SDKs for a complete end-to-end solution, though it is possible to only use the APIs. Currently, there are three verification methods supported:
+
+    - FlashCall verification - Android only
+    - PIN SMS verification - iOS, Android, Javascript
+    - Callout verification (voice call) - iOS only
+
+    #### FlashCall verification
+    With the flashCall verification method, a user's phone number is verified by triggering a "missed call" towards this number. The call is intercepted by the Android SDK in the mobile app and blocked automatically.
+
+    To initiate a flashCall verification, check the [Android SDK documentation](doc:verification-android-the-verification-process#flash-call-verification). For additional security, it is recommended that you control which verification requests should proceed and which ones not, by listening in your backend for the [Verification Request Event](doc:verification-rest-verification-api#verification-request) and respond accordingly. Your backend will be notified on the result of the verification with the [Verification Result Event](doc:verification-rest-callback-api#verification-result-event).
+
+    #### PIN SMS verification
+
+    With the PIN SMS verification method, a user's phone number is verified by sending an SMS containing a PIN code to this number. In the case of iOS or Javascript, the user needs to enter the PIN manually in the app, while for Android there is an option of intercepting the SMS message delivery and capturing the PIN code automatically.
+
+    To initiate a PIN SMS verification, check the [iOS](doc:verification-ios-sms-verification), [Android](doc:verification-for-android) and [Javascript](doc:verification-for-javascript) documentation. For additional security, it is recommended that you control which verification requests should proceed and which ones not, by listening in your backend for the [Verification Request Event](doc:verification-rest-verification-api#verification-request) and respond accordingly. Your backend will be notified on the result of the verification with the [Verification Result Event](doc:verification-rest-callback-api#verification-result-event).
+
+    #### Callout verification
+
+    With the callout verification method, a user's phone number is verified by receiving a phone call and hearing a pre-recorded or text-to-speech message, advising the user to press a digit code. When the user presses the digit code in the dialpad, the verification is successful.
+
+    To initiate a callout verification, check the [iOS documentation](doc:verification-ios-callout-verification). For additional security, it is recommended that you control which verification requests should proceed and which ones not, by listening in your backend for the [Verification Request Event](doc:verification-rest-verification-api#verification-request) and respond accordingly. Your backend will be notified on the result of the verification with the [Verification Result Event](doc:verification-rest-callback-api#verification-result-event).
+
+    > 📘 For information about webhooks and the verifications events [Callbacks](/docs/verification-rest-callback-api).
+
   contact:
     name: Sinch
-    url: 'https://www.sinch.com/contact-us/'
+    url: "https://www.sinch.com/contact-us/"
     email: support@sinch.com
-  termsOfService: 'https://www.sinch.com/terms-of-service/'
+  termsOfService: "https://www.sinch.com/terms-of-service/"
 servers:
-  - url: 'https://verificationapi-v1.sinch.com/verification/v1'
+  - url: "https://verificationapi-v1.sinch.com/verification/v1"
 tags:
-  - name: Verifications
+  - name: Sending and Reprting verifications
+  - name: Query verifications
   - name: Callbacks
 x-explorer-enabled: false
-x-samples-languages: ['curl', 'csharp', 'java', 'node', 'php']
+x-samples-languages: ["curl", "csharp", "java", "node", "php"]
 security:
   - BasicAuth: []
 paths:
@@ -21,31 +54,31 @@ paths:
     parameters: []
     post:
       tags:
-       - Verifications
+        - Sending and Reprting verifications
       summary: Start verification
       operationId: sendVerification
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/VerificationResponse'
+                $ref: "#/components/schemas/VerificationResponse"
               examples:
                 FlashCall:
                   value:
-                    id: '1234567876'
+                    id: "1234567876"
                     flashCall:
-                      cliFilter: '(.*)70123(.*)'
+                      cliFilter: "(.*)70123(.*)"
                       interceptionTimeout: 120
                 Sms:
                   value:
-                    id: '1234567890'
+                    id: "1234567890"
                     sms:
-                      template: 'Your verfication code is {{CODE}}'
+                      template: "Your verfication code is {{CODE}}"
                 Callout:
                   value:
-                    id: '1234567890'
+                    id: "1234567890"
                     callout:
                       startPollingAfter: 3
                       stopPollingAfter: 30
@@ -54,43 +87,40 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/VerificationRequest'
+              $ref: "#/components/schemas/VerificationRequest"
             examples:
               FlashCall:
                 value:
                   identity:
                     type: number
-                    endpoint: '+46700000000'
+                    endpoint: "+46700000000"
                   method: flashCall
               Sms:
                 value:
                   identity:
                     type: number
-                    endpoint: '+46700000000'
+                    endpoint: "+46700000000"
                   method: sms
               Callout:
                 value:
                   identity:
                     type: number
-                    endpoint: '+46700000000'
+                    endpoint: "+46700000000"
                   method: callout
-        description: ''
+        description: ""
       description: |-
-        This method is used by the mobile and web Verification SDKs to start a verification. It can also be used to request a verification from your backend, by making an [Application signed request](https://developers.sinch.com/docs/using-rest#section-application-signed-request). It is a POST request which specifies the phone number that should be verified and the verification method.
-
+        This method is used by the mobile and web Verification SDKs to start a verification. It can also be used to request a verification from your backend, by making an request.
         Authorization
         Authorization level can be specified in the Sinch dashboard, under your app settings. By default it is set to "Deny". These schemes are allowed:
-
-        - [Public authorization](https://developers.sinch.com/docs/using-rest#section-public-resources)
-        - [Application signed request](https://developers.sinch.com/docs/using-rest#section-application-signed-request)
-        - [Instance signed requests](https://developers.sinch.com/docs/using-rest#section-instance-signed-request)
-  '/verifications/{type}/{endpoint}':
+  "/verifications/{type}/{endpoint}":
     parameters:
       - schema:
           type: string
+          default: number
         name: type
         in: path
         required: true
+        example: number
       - schema:
           type: string
         name: endpoint
@@ -98,20 +128,20 @@ paths:
         required: true
     put:
       tags:
-        - Verifications
-      summary: 'Verify verification code'
+        - Sending and Reprting verifications
+      summary: "Verify verification code"
       operationId: verifyVerificationCode
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/VerificationResult'
+                $ref: "#/components/schemas/VerificationResult"
               examples:
                 response:
                   value:
-                    id: '1234567890'
+                    id: "1234567890"
                     method: sms
                     status: SUCCESSFUL
                     source: intercept
@@ -119,19 +149,19 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/VerificationReportRequest'
+              $ref: "#/components/schemas/VerificationReportRequest"
             examples:
               FlashCall:
                 value:
                   method: flashCall
                   flashCall:
-                    cli: '+46000000000'
+                    cli: "+46000000000"
               SMS:
                 value:
                   method: sms
                   sms:
-                    code: '123'
-  '/verifications/id/{id}':
+                    code: "123"
+  "/verifications/id/{id}":
     parameters:
       - schema:
           type: string
@@ -142,27 +172,26 @@ paths:
     get:
       summary: Get verification result by Id
       tags:
-      -  Verifications
+        - Query verifications
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/VerificationResult'
+                $ref: "#/components/schemas/VerificationResult"
               examples:
                 Response:
                   value:
-                    id: '1234567890'
+                    id: "1234567890"
                     method: sms
                     status: SUCCESSFUL
                     source: intercept
       operationId: getVerificationById
       description: |-
         Queries the verification result by sending the verification id. With this query you can get the result of a verification.
-        Authorization
-        This is a protected resource and requires an [application signed request](https://developers.sinch.com/docs/using-rest#section-application-signed-request).
-  '/verifications/reference/{id}':
+
+  "/verifications/reference/{id}":
     parameters:
       - schema:
           type: string
@@ -173,16 +202,16 @@ paths:
     get:
       summary: Get verification by reference
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/VerificationResult'
+                $ref: "#/components/schemas/VerificationResult"
               examples:
                 Response:
                   value:
-                    id: '1234567123'
+                    id: "1234567123"
                     method: sms
                     status: SUCCESSFUL
                     source: manual
@@ -191,16 +220,14 @@ paths:
       description: |-
         Queries the verification result by sending the custom reference
         With this query you can get the result of a verification by sending the reference.
-
-        Authorization
-        This is a protected resource and requires an [application signed request](https://developers.sinch.com/docs/using-rest#section-application-signed-request).
       tags:
-        - Verifications
-  '/verifications/{method}/{type}/{endpoint}':
+        - Query verifications
+  "/verifications/{method}/{type}/{endpoint}":
     parameters:
       - schema:
           type: string
           enum: [sms, flashcall, callout]
+          default: sms
         name: method
         in: path
         description: >
@@ -216,10 +243,11 @@ paths:
       - schema:
           type: string
           enum: [number]
+          default: number
         name: type
         in: path
         required: true
-        description: 'endpoints type, must be number'
+        description: "endpoints type, must be number"
       - schema:
           type: string
         name: endpoint
@@ -228,100 +256,98 @@ paths:
     get:
       summary: Get verification result by number
       tags:
-        - Verifications
+        - Query verifications
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/VerificationResult'
+                $ref: "#/components/schemas/VerificationResult"
               examples:
                 response:
                   value:
-                    id: '1234567890'
+                    id: "1234567890"
                     method: callout
                     status: SUCCESSFUL
                     reference: abc_123
-      operationId: getVerificationsByMethod type 
+      operationId: getVerificationsByMethod type
       description: |-
         Queries the verification result by sending the number to be verified.
-        Warning, this is not PII safe
-        Authorization
-        The following endpoint is [public authorized](https://developers.sinch.com/docs/using-rest#section-public-resources), so there is no need to use any signing for this request. This is so that the client can poll for the status of their callout verification without first being authorized.
-  /yourEndpoint:
-    post:
-      tags:
-        - Callbacks
-      summary: 'New verification Event'
-      description: "This callback event is a POST request to the specified verification callback URL and is triggered when a new verification request is made from the SDK client or the Verification Request API. This callback event is only triggered when a verification callback URL is specified."
-      operationId: newVerification
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RequestEventResponse'
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                id:
-                  type: string
-                event:
-                  type: string
-                method:
-                  type: string
-                identity:
-                  $ref: '#/components/schemas/Identity'
-                price:
-                  $ref: '#/components/schemas/Money'
-                reference:
-                  type: string
-                custom:
-                  type: string
-                acceptLanguage:
-                  type: string
-            examples:
-              example:
-                value:
-                  id: '1234567890'
-                  event: VerificationRequestEvent
-                  method: sms
-                  identity:
-                    type: number
-                    endpoint: '+46700000000'
-                  price:
-                    amount: 10.5
-                    currencyId: USD
-  /verificationResult:
-    post:
-      tags:
-       - Callbacks
-      summary: 'Verification result event'
-      operationId: verificationResult
-      responses:
-        '200':
-          description: OK
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ResultEvent'
-      description: |-
-        This callback event is is a POST request to the specified verification
-        callback URL and triggered when a verification has been completed and
-        the result is known. It is used to report the verification result to your backend application. This callback event is only triggered
-        when the verification callback URL is specified.
+        > ⚠️ This is not PII safe
+    # /yourEndpoint:
+    #   post:
+    #     tags:
+    #       - Callbacks
+    #     summary: "New verification Event"
+    #     description: "This callback event is a POST request to the specified verification callback URL and is triggered when a new verification request is made from the SDK client or the Verification Request API. This callback event is only triggered when a verification callback URL is specified."
+    #     operationId: newVerification
+    #     responses:
+    #       "200":
+    #         description: OK
+    #         content:
+    #           application/json:
+    #             schema:
+    #               $ref: "#/components/schemas/RequestEventResponse"
+    #     requestBody:
+    #       content:
+    #         application/json:
+    #           schema:
+    #             type: object
+    #             properties:
+    #               id:
+    #                 type: string
+    #               event:
+    #                 type: string
+    #               method:
+    #                 type: string
+    #               identity:
+    #                 $ref: "#/components/schemas/Identity"
+    #               price:
+    #                 $ref: "#/components/schemas/Money"
+    #               reference:
+    #                 type: string
+    #               custom:
+    #                 type: string
+    #               acceptLanguage:
+    #                 type: string
+    #           examples:
+    #             example:
+    #               value:
+    #                 id: "1234567890"
+    #                 event: VerificationRequestEvent
+    #                 method: sms
+    #                 identity:
+    #                   type: number
+    #                   endpoint: "+46700000000"
+    #                 price:
+    #                   amount: 10.5
+    #                   currencyId: USD
+    # /verificationResult:
+    # post:
+    #   tags:
+    #     - Callbacks
+    #   summary: "Verification result event"
+    #   operationId: verificationResult
+    #   responses:
+    #     "200":
+    #       description: OK
+    #   requestBody:
+    #     content:
+    #       application/json:
+    #         schema:
+    #           $ref: "#/components/schemas/ResultEvent"
+    #   description: |-
+    #     This callback event is is a POST request to the specified verification
+    #     callback URL and triggered when a verification has been completed and
+    #     the result is known. It is used to report the verification result to your backend application. This callback event is only triggered
+    #     when the verification callback URL is specified.
 components:
   securitySchemes:
-     BasicAuth:
+    BasicAuth:
       type: http
       scheme: basic
-      description: Basic auth with your username application\{applicationkey} password your secret 
+      description: Basic auth with your username application\{applicationkey} password your secret
   schemas:
     FlashCallOptions:
       title: FlashCallOptions
@@ -331,13 +357,13 @@ components:
           type: string
         dialTimeout:
           type: integer
-      description: 'is an optional object for flashCall verifications. It allows you to specify Cli and dial time out parameters for flashCall. Cli is a particular number to be used as caller Id in the flashCall. The number that you specify needs to be a number that you have rented from the Sinch portal. DialTimeout should be specified in seconds and must be between 5 and 120. FlashCallOptions object can be specified optionally, and only if the verification request was triggered from your backend (no SDK client) through an [Application signed request](https://developers.sinch.com/docs/using-rest#section-application-signed-request).'
+      description: "is an optional object for flashCall verifications. It allows you to specify Cli and dial time out parameters for flashCall. Cli is a particular number to be used as caller Id in the flashCall. The number that you specify needs to be a number that you have rented from the Sinch portal. DialTimeout should be specified in seconds and must be between 5 and 120. FlashCallOptions object can be specified optionally, and only if the verification request was triggered from your backend (no SDK client)"
     VerificationRequest:
       title: VerificationRequest
       type: object
       properties:
         identity:
-          $ref: '#/components/schemas/Identity'
+          $ref: "#/components/schemas/Identity"
         method:
           type: string
           default: sms
@@ -355,7 +381,9 @@ components:
           type: string
           description: can be used to pass custom data in the request.
         metadata:
-          $ref: '#/components/schemas/Metadata'
+          $ref: "#/components/schemas/Metadata"
+        flashCallOptions:
+          $ref: "#/components/schemas/FlashCallOptions"
       required:
         - identity
         - method
@@ -363,21 +391,17 @@ components:
       title: Identity
       type: object
       properties:
-        identity:
-          type: object
-          properties:
-            type:
-              type: string
-            endpoint:
-              type: string
+        type:
+          type: string
+          default: number
+        endpoint:
+          type: string
+          default: +15551231212
       description: 'identity indicates type of endpoint that will be verified and specifies the particular endpoint. The support endpoint type currently is only "number".'
     Metadata:
       title: metadata
       type: object
-      properties:
-        flashCallOptions:
-          $ref: '#/components/schemas/FlashCallOptions'
-      description: ''
+      description: "Your custom json object"
     VerificationResponse:
       title: VerificationResponse
       type: object
@@ -385,11 +409,11 @@ components:
         id:
           type: string
         sms:
-          $ref: '#/components/schemas/SmsVerificationData'
+          $ref: "#/components/schemas/SmsVerificationData"
         flashCall:
-          $ref: '#/components/schemas/FlashCallVerificationData'
+          $ref: "#/components/schemas/FlashCallVerificationData"
         callout:
-          $ref: '#/components/schemas/CalloutVerificationData'
+          $ref: "#/components/schemas/CalloutVerificationData"
     SmsVerificationData:
       title: SmsVerificationData
       type: object
@@ -409,7 +433,7 @@ components:
     CalloutVerificationData:
       title: CalloutVerificationData
       type: object
-      description: ''
+      description: ""
       properties:
         startPollingafter:
           type: integer
@@ -427,10 +451,11 @@ components:
             indicates the verification method. Possible values are:
             - flashCall
             - sms
+          default: SMS
         sms:
-          $ref: '#/components/schemas/SmsVerificationReportData'
+          $ref: "#/components/schemas/SmsVerificationReportData"
         flashCall:
-          $ref: '#/components/schemas/FlashCallVerificationReportData'
+          $ref: "#/components/schemas/FlashCallVerificationReportData"
     SmsVerificationReportData:
       title: SmsVerificationReportData
       type: object
@@ -438,8 +463,10 @@ components:
         code:
           type: string
           description: indicates the PIN code that was inputted by the user in the app
+          default: "123456"
         cli:
           type: string
+          default: +15551231212
           description: indicates the caller Id of the flashCall or the sender Id of the SMS.
     FlashCallVerificationReportData:
       title: flashCallVerificationReportData
@@ -518,12 +545,12 @@ components:
             - allow
             - deny
         sms:
-          $ref: '#/components/schemas/SMS'
+          $ref: "#/components/schemas/SMS"
         flashCall:
-          $ref: '#/components/schemas/FlashCall'
+          $ref: "#/components/schemas/FlashCall"
         callout:
-          $ref: '#/components/schemas/Callout'
-      description: ''
+          $ref: "#/components/schemas/Callout"
+      description: ""
     SMS:
       title: Sms
       type: object
@@ -531,17 +558,17 @@ components:
         SMS with pre-defined PIN:
           action: allow
           sms:
-            code: '12345'
+            code: "12345"
         Set the SMS language to Spanish:
           action: allow
           sms:
-            code: '12345'
+            code: "12345"
             acceptLanguage:
               - es-ES
       properties:
         code:
           type: string
-          description: 'contains the SMS PIN that should be used. By default, the Sinch dashboard will automatically generate PIN codes for SMS verification.'
+          description: "contains the SMS PIN that should be used. By default, the Sinch dashboard will automatically generate PIN codes for SMS verification."
         acceptLanguage:
           type: string
           description: |-
@@ -555,7 +582,7 @@ components:
         Flashcall with pre-defined CLI:
           action: allow
           flashCall:
-            cli: '+4445874587'
+            cli: "+4445874587"
         Flashcall with pre-defined dial timeout:
           action: allow
           flashCall:
@@ -566,7 +593,7 @@ components:
           description: "shows the phone number that will be displayed to the user when the flashcall is received on the user's phone. By default, the Sinch dashboard will select randomly the CLI that will be displayed during a flashcall from a pool of numbers. \n\nPlease note that in order to set your own CLI, you need to own the number that you will set."
         dialTimeout:
           type: integer
-          description: 'shows the maximum time that a flashcall verification will be active and can be completed. If the phone number has not been verified successfully during this time, then the verification request will fail. By default, the Sinch dashboard will automatically optimize dial timeout during a flashcall. '
+          description: "shows the maximum time that a flashcall verification will be active and can be completed. If the phone number has not been verified successfully during this time, then the verification request will fail. By default, the Sinch dashboard will automatically optimize dial timeout during a flashcall. "
     Callout:
       title: Callout
       type: object
@@ -633,10 +660,10 @@ components:
           description: displays a custom string that can be passed provided during a verification request.
       x-examples:
         example:
-          id: '1234567890'
+          id: "1234567890"
           event: VerificationResultEvent
           method: sms
           identity:
             type: number
-            endpoint: '+46700000000'
+            endpoint: "+46700000000"
           status: SUCCESSFUL
