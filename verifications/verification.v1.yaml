@@ -44,7 +44,6 @@ servers:
 tags:
   - name: Sending and Reprting verifications
   - name: Query verifications
-  - name: Callbacks
 x-explorer-enabled: false
 x-samples-languages: ["curl", "csharp", "java", "node", "php"]
 security:
@@ -275,73 +274,6 @@ paths:
       description: |-
         Queries the verification result by sending the number to be verified.
         > ⚠️ This is not PII safe
-    # /yourEndpoint:
-    #   post:
-    #     tags:
-    #       - Callbacks
-    #     summary: "New verification Event"
-    #     description: "This callback event is a POST request to the specified verification callback URL and is triggered when a new verification request is made from the SDK client or the Verification Request API. This callback event is only triggered when a verification callback URL is specified."
-    #     operationId: newVerification
-    #     responses:
-    #       "200":
-    #         description: OK
-    #         content:
-    #           application/json:
-    #             schema:
-    #               $ref: "#/components/schemas/RequestEventResponse"
-    #     requestBody:
-    #       content:
-    #         application/json:
-    #           schema:
-    #             type: object
-    #             properties:
-    #               id:
-    #                 type: string
-    #               event:
-    #                 type: string
-    #               method:
-    #                 type: string
-    #               identity:
-    #                 $ref: "#/components/schemas/Identity"
-    #               price:
-    #                 $ref: "#/components/schemas/Money"
-    #               reference:
-    #                 type: string
-    #               custom:
-    #                 type: string
-    #               acceptLanguage:
-    #                 type: string
-    #           examples:
-    #             example:
-    #               value:
-    #                 id: "1234567890"
-    #                 event: VerificationRequestEvent
-    #                 method: sms
-    #                 identity:
-    #                   type: number
-    #                   endpoint: "+46700000000"
-    #                 price:
-    #                   amount: 10.5
-    #                   currencyId: USD
-    # /verificationResult:
-    # post:
-    #   tags:
-    #     - Callbacks
-    #   summary: "Verification result event"
-    #   operationId: verificationResult
-    #   responses:
-    #     "200":
-    #       description: OK
-    #   requestBody:
-    #     content:
-    #       application/json:
-    #         schema:
-    #           $ref: "#/components/schemas/ResultEvent"
-    #   description: |-
-    #     This callback event is is a POST request to the specified verification
-    #     callback URL and triggered when a verification has been completed and
-    #     the result is known. It is used to report the verification result to your backend application. This callback event is only triggered
-    #     when the verification callback URL is specified.
 components:
   securitySchemes:
     BasicAuth:
