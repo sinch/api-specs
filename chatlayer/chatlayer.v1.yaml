@@ -189,7 +189,129 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/ExecuteConversationActionRequest'
-            examples: {}
+            examples:
+              sendAttachmentExample:
+                value:
+                  sendMessages:
+                    - attachmentTemplate:
+                        media:
+                          url: 'https://via.placeholder.com/150'
+                          type: image
+              sendListTemplateExample:
+                value:
+                  sendMessages:
+                    - listTemplate:
+                        size: LARGE
+                        button:
+                          urlButton:
+                            title: Visit the docs
+                            url: 'https://docs.chatlayer.ai'
+                        elements:
+                          - button:
+                              urlButton:
+                                title: Visit the docs
+                                url: 'https://docs.chatlayer.ai'
+                            imageUrl: 'https://via.placeholder.com/400'
+                            title: Visit Chatlayer.ai Docs
+                            subTitle: This is a subTitle
+                          - button:
+                              urlButton:
+                                title: Visit the website
+                                url: 'https://chatlayer.ai'
+                            imageUrl: 'https://via.placeholder.com/400'
+                            title: Visit Chatlayer.ai Website
+              sendCarouselTemplateExample:
+                value:
+                  sendMessages:
+                    - carouselTemplate:
+                        elements:
+                          - buttons:
+                              - urlButton:
+                                  title: Visit the docs
+                                  url: 'https://docs.chatlayer.ai'
+                            imageUrl: 'https://via.placeholder.com/400'
+                            title: Visit Chatlayer.ai Docs
+                            subTitle: This is a subTitle
+                          - buttons:
+                              - urlButton:
+                                  title: Visit the website
+                                  url: 'https://chatlayer.ai'
+                            imageUrl: 'https://via.placeholder.com/400'
+                            title: Visit Chatlayer.ai Website
+              sendQuickReplyExample:
+                value:
+                  sendMessages:
+                    - quickReplyTemplate:
+                        textMessages:
+                          - text: Random Message One
+                          - text: Random Message Two
+                        quickReplies:
+                          - imageUrl: 'https://via.placeholder.com/10'
+                            title: Set A
+                            payload:
+                              nextDialogstateId: 71001a34-c557-40a1-8635-969ac4f8a3e6
+                              sessionDataToSet:
+                                - key: a
+                                  value: a
+                          - imageUrl: 'https://via.placeholder.com/10'
+                            title: Set B
+                            payload:
+                              nextDialogstateId: 71001a34-c557-40a1-8635-969ac4f8a3e6
+                              sessionDataToSet:
+                                - key: b
+                                  value: b
+                          - imageUrl: 'https://via.placeholder.com/10'
+                            title: Set C
+                            payload:
+                              nextDialogstateId: 71001a34-c557-40a1-8635-969ac4f8a3e6
+                              sessionDataToSet:
+                                - key: C
+                                  value: C
+              sendButtonsExample:
+                value:
+                  sendMessages:
+                    - buttonTemplate:
+                        textMessages:
+                          - text: Random Message One
+                          - text: Random Message Two
+                        buttons:
+                          - urlButton:
+                              title: Visit Chatlayer.ai
+                              url: 'https://www.chatlayer.ai'
+                          - phoneNumberButton:
+                              title: Call Chatlayer
+                              phoneNumber: phoneNumber
+                          - postBackButton:
+                              title: More info
+                              payload:
+                                nextDialogstateId: 71001a34-c557-40a1-8635-969ac4f8a3e6
+                                sessionDataToSet:
+                                  - key: test
+                                    value: test
+              sendTextMessageExample:
+                value:
+                  sendMessages:
+                    - textMessageTemplate:
+                        textMessages:
+                          - text: Random Message One
+                          - text: Random Message Two
+              setSessionDataExample:
+                value:
+                  setSessionData:
+                    - namespace: objectVar
+                      data:
+                        item1: value1
+                        item2: value2
+                    - namespace: textVar
+                      data: TEXT
+                    - namespace: numVar
+                      data: 0
+                    - namespace: arrayVar
+                      data:
+                        - 1
+                        - 2
+                        - '3'
+                        - text: four
         description: ''
       parameters:
         - schema:
